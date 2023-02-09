@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/fonts/iconfont.ttf</file>
+        <file>assets/icons/check.svg</file>
+        <file>assets/icons/tray_icon.svg</file>
+        <file>assets/icons/theme.svg</file>
+        <file>assets/icons/widgets.svg</file>
+        <file>assets/icons/monitor.svg</file>
+    </qresource>
+</RCC>
