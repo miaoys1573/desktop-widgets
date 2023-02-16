@@ -1,10 +1,10 @@
 #include "basesetting.h"
 #include "baselabel.h"
 #include "dbutil.h"
+#include "basebutton.h"
 #include <QButtonGroup>
 #include <QFile>
 #include <QMetaEnum>
-#include <QPushButton>
 #include <QScrollArea>
 #include <QSizePolicy>
 #include <QSlider>
@@ -27,14 +27,11 @@ void BaseSetting::initUI()
 void BaseSetting::setTitleBar()
 {
     // 内容
-    BaseLabel *title = new BaseLabel("", "title-label", BaseLabel::TitleLabel, "0");
+    BaseLabel *title = new BaseLabel("", "title-label", BaseLabel::TitleLabel, "padding:0;");
     QStyle *style = this->style();
     QIcon icon = style->standardIcon(QStyle::SP_DialogCloseButton);
-    QPushButton *closeButton = new QPushButton();
-    closeButton->setObjectName("close-button");
+    BaseButton *closeButton = new BaseButton("close-button");
     closeButton->setIcon(icon);
-    closeButton->setCursor(QCursor(Qt::PointingHandCursor));
-    closeButton->setFocusPolicy(Qt::NoFocus);
 
     // 布局
     QGridLayout *titleBarLayout = new QGridLayout;
@@ -59,7 +56,7 @@ void BaseSetting::setThemePanel()
     themeItemSlider->setCursor(QCursor(Qt::PointingHandCursor));
 
     // 布局
-    int paddingTop = 10;
+    QString paddingTop = "padding-top:10px";
     QVBoxLayout *themeLayout = new QVBoxLayout;
     QHBoxLayout *themeItemLayout = new QHBoxLayout;
     themeItemLayout->addWidget(new BaseLabel("透明度", "theme-item-transparence", BaseLabel::ContentLabel, paddingTop), 0, Qt::AlignLeft);
@@ -85,10 +82,7 @@ void BaseSetting::setResetPanel()
     // 内容
     QFrame *resetFrame = new QFrame();
     resetFrame->setObjectName("reset-frame");
-    QPushButton *resetButton = new QPushButton("恢复默认");
-    resetButton->setObjectName("reset-button");
-    resetButton->setCursor(QCursor(Qt::PointingHandCursor));
-    resetButton->setFocusPolicy(Qt::NoFocus);
+    BaseButton *resetButton = new BaseButton("恢复默认", "reset-button");
 
     // 布局
     QVBoxLayout *resetLayout = new QVBoxLayout;
@@ -96,7 +90,7 @@ void BaseSetting::setResetPanel()
     resetFrame->setLayout(resetLayout);
 
     // 添加到主布局
-    layout->addWidget(new BaseLabel("重置", "reset-label", BaseLabel::TitleLabel, 20));
+    layout->addWidget(new BaseLabel("重置", "reset-label", BaseLabel::TitleLabel, "padding-top:20px;"));
     layout->addWidget(resetFrame);
     layout->addWidget(new BaseLabel);
 }
@@ -144,8 +138,8 @@ void BaseSetting::loadStyleSheet()
 void BaseSetting::initSignalSlots()
 {
     connect(this->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)), this, SLOT(sliderChange(int)));
-    connect(this->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
-    connect(this->findChild<QPushButton*>("reset-button"), SIGNAL(clicked()), this, SLOT(reset()));
+    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
+    connect(this->findChild<BaseButton*>("reset-button"), SIGNAL(clicked()), this, SLOT(reset()));
     connect(this->findChild<ColorRadio*>("background-pure-color"), SIGNAL(clicked()), this, SLOT(toggleBackgroundColorPanel()));
     connect(this->findChild<ColorRadio*>("background-gradient-color"), SIGNAL(clicked()), this, SLOT(toggleBackgroundColorPanel()));
 }

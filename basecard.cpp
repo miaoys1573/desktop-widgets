@@ -1,9 +1,7 @@
 #include "basecard.h"
 #include "dbutil.h"
-#include "dbutil.h"
 
 #include <QFontDatabase>
-#include <QPushButton>
 #include <QSlider>
 
 void BaseCard::initUI()
@@ -23,11 +21,11 @@ void BaseCard::initUI()
 
     // 按钮组
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    QPushButton *refreshButton = this->createButton("refresh");
+    BaseButton *refreshButton = this->createButton("refresh");
     refreshButton->setVisible(showRefreshButton);
     buttonsLayout->addWidget(refreshButton, 0, Qt::AlignLeft);
-    QPushButton *settingButton = this->createButton("setting");
-    QPushButton *closeButton = this->createButton("close");
+    BaseButton *settingButton = this->createButton("setting");
+    BaseButton *closeButton = this->createButton("close");
     buttonsLayout->addWidget(settingButton, 0, Qt::AlignRight);
     buttonsLayout->addWidget(closeButton, 0, Qt::AlignRight);
     buttonsLayout->setAlignment(Qt::AlignRight);
@@ -55,11 +53,10 @@ void BaseCard::loadStyleSheet()
 
 void BaseCard::initSignalSlots()
 {
-    connect(this->findChild<QPushButton*>("refresh-button"), SIGNAL(clicked()), this, SLOT(refresh()));
-    connect(this->findChild<QPushButton*>("setting-button"), SIGNAL(clicked()), this, SLOT(showSettingPanel()));
-    connect(this->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
-    connect(this->findChild<QPushButton*>("close-button"), SIGNAL(clicked()),
-            _setting, SLOT(hide()));
+    connect(this->findChild<BaseButton*>("refresh-button"), SIGNAL(clicked()), this, SLOT(refresh()));
+    connect(this->findChild<BaseButton*>("setting-button"), SIGNAL(clicked()), this, SLOT(showSettingPanel()));
+    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
+    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), _setting, SLOT(hide()));
 
     for (int i = 1; i <= _setting->getColors().size(); i++) {
         connect(_setting->findChild<QRadioButton*>(QString("background-pure-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeBackground()));
@@ -71,12 +68,9 @@ void BaseCard::initSignalSlots()
     connect(_setting->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)), this, SLOT(changeBackgroundAlpha(int)));
 }
 
-QPushButton *BaseCard::createButton(QString name)
+BaseButton *BaseCard::createButton(QString name)
 {
-    QPushButton *button = new QPushButton();
-    button->setObjectName(name + "-button");
-    button->setCursor(QCursor(Qt::PointingHandCursor));
-    button->setFocusPolicy(Qt::NoFocus);
+    BaseButton *button = new BaseButton(name + "-button");
     button->setFont(iconFont);
     button->setText(fontMap[name]);
     return button;
@@ -203,10 +197,10 @@ void BaseCard::setTimerInterval(int interval)
 void BaseCard::changeFontColor(QString color)
 {
     if (showRefreshButton) {
-        this->findChild<QPushButton*>("refresh-button")->setStyleSheet("color:" + color);
+        this->findChild<BaseButton*>("refresh-button")->setStyleSheet("color:" + color);
     }
-    this->findChild<QPushButton*>("setting-button")->setStyleSheet("color:" + color);
-    this->findChild<QPushButton*>("close-button")->setStyleSheet("color:" + color);
+    this->findChild<BaseButton*>("setting-button")->setStyleSheet("color:" + color);
+    this->findChild<BaseButton*>("close-button")->setStyleSheet("color:" + color);
 }
 
 void BaseCard::updateData()
@@ -217,7 +211,7 @@ void BaseCard::updateData()
 void BaseCard::setShowRefreshButton(bool flag)
 {
     showRefreshButton = flag;
-    this->findChild<QPushButton*>("refresh-button")->setVisible(true);
+    this->findChild<BaseButton*>("refresh-button")->setVisible(true);
 }
 
 BaseCard::BaseCard(QString name, QString showName, QWidget *parent) : BaseWidget (parent)

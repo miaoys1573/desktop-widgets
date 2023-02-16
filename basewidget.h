@@ -10,11 +10,11 @@ class BaseWidget : public QDialog
 private:
     int _width;
     int _height;
-    QBrush _brush;
-    QPoint _offPos;
+    QBrush brush;
+    QPoint offPos;
 
-    void _initUI();
-    void _initSignalSlots();
+    void initUI();
+    void initSignalSlots();
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;

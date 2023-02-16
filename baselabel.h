@@ -18,8 +18,7 @@ public:
     BaseLabel(QString text, QString objectName, QWidget *parent = 0);
     BaseLabel(QString text, QString objectName, QString styleSheet, QWidget *parent = 0);
     BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QWidget *parent = 0);
-    BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QString padding, QWidget *parent = 0);
-    BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, int paddingTop, QWidget *parent = 0);
+    BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QString styleSheet, QWidget *parent = 0);
 };
 
 #endif // BASELABEL_H

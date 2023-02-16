@@ -22,15 +22,20 @@ private:
     QSize size;
 
     void initUI();
+    // 标题栏
     void setTitleBar();
+    // 主题区
     void setThemePanel();
+    // 重置区
     void setResetPanel();
     void loadStyleSheet();
     void initSignalSlots();
 
     ColorRadio *createColorRadio(QString objName, QString background);
     ColorRadio *createColorRadio(QString objName, QGradient::Preset preset);
+    // 纯色选择区
     QFrame *createPureColorPanel(QString name);
+    // 渐变色选择区
     QFrame *createGradientColorPanel(QString name);
     QLayout *createBackgroundTypeLayout();
 

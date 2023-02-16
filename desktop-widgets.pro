@@ -39,7 +39,8 @@ SOURCES += \
     themepanel.cpp \
     mainsetting.cpp \
     weather.cpp \
-    yiyan.cpp
+    yiyan.cpp \
+    basebutton.cpp
 
 HEADERS += \
         basewidget.h \
@@ -55,7 +56,8 @@ HEADERS += \
     themepanel.h \
     mainsetting.h \
     weather.h \
-    yiyan.h
+    yiyan.h \
+    basebutton.h
 
 FORMS +=
 

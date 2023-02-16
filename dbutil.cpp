@@ -1,5 +1,4 @@
 #include "dbutil.h"
-
 #include <QDir>
 #include <QMetaEnum>
 #include <QSqlQuery>

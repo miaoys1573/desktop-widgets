@@ -28,24 +28,13 @@ BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype
     }
 }
 
-BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QString padding, QWidget *parent)
+BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QString styleSheet, QWidget *parent)
     : QLabel (text, parent)
 {
     this->setObjectName(objectName);
     if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet(QString("font-size:18px;font-weight:bold;padding:%1;").arg(padding));
+        this->setStyleSheet(QString("font-size:18px;font-weight:bold;%1;").arg(styleSheet));
     } else if (labeltype == BaseLabel::ContentLabel) {
-        this->setStyleSheet(QString("padding:%1;").arg(padding));
-    }
-}
-
-BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, int paddingTop, QWidget *parent)
-    : QLabel (text, parent)
-{
-    this->setObjectName(objectName);
-    if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet(QString("font-size:18px;font-weight:bold;padding:%1px 0 5px 0;").arg(paddingTop));
-    } else if (labeltype == BaseLabel::ContentLabel) {
-        this->setStyleSheet(QString("padding-top:%1px;").arg(paddingTop));
+        this->setStyleSheet(styleSheet);
     }
 }

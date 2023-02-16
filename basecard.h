@@ -1,6 +1,7 @@
 #ifndef BASECARD_H
 #define BASECARD_H
 
+#include "basebutton.h"
 #include "basesetting.h"
 #include "basewidget.h"
 
@@ -22,7 +23,7 @@ private:
     void loadStyleSheet();
     void initSignalSlots();
 
-    QPushButton *createButton(QString name);
+    BaseButton *createButton(QString name);
 
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;

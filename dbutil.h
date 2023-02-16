@@ -5,6 +5,20 @@
 
 #include <qsqldatabase.h>
 
+class Setting;
+class DbUtil : QObject
+{
+private:
+    static QSqlDatabase initDb();
+
+public:
+    DbUtil();
+    static Setting findSetting(QString name);
+    static void updateSetting(QString name, QString key, int value);
+    static void updateSetting(QString name, QString key, QString value);
+    static void updateSetting(QString name, QStringList keys, QStringList values);
+};
+
 class Setting
 {
 public:
@@ -18,19 +32,6 @@ public:
     int backgroundGradientColorIndex;
     int fontColorIndex;
     bool isShow;
-};
-
-class DbUtil : QObject
-{
-private:
-    static QSqlDatabase initDb();
-
-public:
-    DbUtil();
-    static Setting findSetting(QString name);
-    static void updateSetting(QString name, QString key, int value);
-    static void updateSetting(QString name, QString key, QString value);
-    static void updateSetting(QString name, QStringList keys, QStringList values);
 };
 
 #endif // DBUTIL_H
