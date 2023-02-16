@@ -27,7 +27,6 @@ public:
     QString name;
     BaseWidget(QWidget *parent = 0);
     BaseWidget(QColor background, QWidget *parent = 0);
-    BaseWidget(int width, int height, QColor background, QWidget *parent = 0);
     void setBrush(QBrush brush);
 };
 

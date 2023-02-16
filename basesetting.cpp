@@ -266,7 +266,7 @@ void BaseSetting::reset()
     this->findChild<QRadioButton*>("font-pure-color-radio1")->click();
 }
 
-BaseSetting::BaseSetting(QWidget *parent) : BaseWidget(400, -1, QColor(240, 240, 240, 250), parent)
+BaseSetting::BaseSetting(QWidget *parent) : BaseWidget(QColor(240, 240, 240, 250), parent)
 {
     // 颜色块
     colors = QString("#FFFFFF,#1E90FF,#00CED1,#90EE90,#FF8C00,#FF4500,#4D4D4D").split(",");

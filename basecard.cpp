@@ -99,6 +99,9 @@ void BaseCard::showEvent(QShowEvent *event)
     } else {
         _setting->initSetting();
     }
+    if (this->height() < 240) {
+        this->setFixedHeight(240);
+    }
     BaseWidget::showEvent(event);
 }
 

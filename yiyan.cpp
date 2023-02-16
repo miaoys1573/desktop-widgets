@@ -11,8 +11,6 @@
 
 void YiYan::initUI()
 {
-    this->setFixedHeight(240);
-
     BaseLabel *contentLabel = new BaseLabel("", "content-label");
     contentLabel->setFixedHeight(160);
     contentLabel->setWordWrap(true);

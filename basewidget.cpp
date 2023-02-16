@@ -80,15 +80,6 @@ BaseWidget::BaseWidget(QColor background, QWidget *parent)
     this->_initUI();
 }
 
-BaseWidget::BaseWidget(int width, int height, QColor background, QWidget *parent)
-    : QDialog(parent)
-{
-    _width = width;
-    _height = height;
-    _brush = QBrush(background);
-    this->_initUI();
-}
-
 void BaseWidget::setBrush(QBrush brush)
 {
     _brush = brush;
