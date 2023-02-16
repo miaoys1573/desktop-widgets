@@ -7,21 +7,23 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <qtextbrowser.h>
 
 void YiYan::initUI()
 {
-    YiYanData yiYanData = this->getYiYanData();
-
     this->setFixedHeight(240);
-    layout->addWidget(new BaseLabel("『", "content-prefix-label", "margin-top:15px;"), 0, Qt::AlignLeft);
-    BaseLabel *contentLabel = new BaseLabel("美人自刎乌江岸，战火曾烧赤壁山，山山山美人自刎乌江岸，战火曾烧赤壁山，山山山", "content-label");
+
+    BaseLabel *contentLabel = new BaseLabel("", "content-label");
+    contentLabel->setFixedHeight(160);
     contentLabel->setWordWrap(true);
-    contentLabel->setStyleSheet("font-size:24px;font-weight:bold;padding:10px;border:1px solid red;");
-    layout->addWidget(contentLabel);
-    layout->addWidget(new BaseLabel("』", "content-suffix-label"), 0, Qt::AlignRight);
-    BaseLabel *fromLabel = new BaseLabel(yiYanData.from, "from-label", "margin-top:15px;");
-    fromLabel->setWordWrap(true);
+    contentLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+    contentLabel->setTextFormat(Qt::RichText);
+    BaseLabel *fromLabel = new BaseLabel("", "from-label");
+
+    layout->addWidget(contentLabel, 0, Qt::AlignVCenter);
     layout->addWidget(fromLabel, 0, Qt::AlignRight);
+
+    this->updateData();
 }
 
 void YiYan::changeFontColor(QString color)
@@ -39,7 +41,8 @@ void YiYan::changeFontColor(QString color)
 void YiYan::updateData()
 {
     YiYanData yiYanData = this->getYiYanData();
-    this->findChild<BaseLabel*>("content-label")->setText(yiYanData.content);
+    QString htmlContent = QString("<div style=\"font-size:24px;font-weight:bold;text-indent:48px;\">%1</div>");
+    this->findChild<BaseLabel*>("content-label")->setText(htmlContent.arg(yiYanData.content));
     this->findChild<BaseLabel*>("from-label")->setText(yiYanData.from);
 }
 
