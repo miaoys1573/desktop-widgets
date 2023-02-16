@@ -3,8 +3,6 @@
 
 #include "basebutton.h"
 #include "basesetting.h"
-#include "basewidget.h"
-
 #include <qmap.h>
 
 class BaseCard : public BaseWidget

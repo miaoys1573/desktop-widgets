@@ -1,4 +1,3 @@
-#include "baselabel.h"
 #include "yiyan.h"
 
 #include <QEventLoop>
@@ -8,6 +7,8 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <qtextbrowser.h>
+
+#include <base/baselabel.h>
 
 void YiYan::initUI()
 {

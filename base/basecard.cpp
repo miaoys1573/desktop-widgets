@@ -1,6 +1,5 @@
 #include "basecard.h"
 #include "dbutil.h"
-
 #include <QFontDatabase>
 #include <QSlider>
 

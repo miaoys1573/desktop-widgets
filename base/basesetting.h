@@ -1,9 +1,9 @@
 #ifndef BASESETTING_H
 #define BASESETTING_H
 
+#include "basewidget.h"
 #include "colorradio.h"
 
-#include <basewidget.h>
 #include <qboxlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>

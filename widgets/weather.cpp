@@ -1,5 +1,6 @@
-#include "baselabel.h"
 #include "weather.h"
+
+#include <base/baselabel.h>
 
 void Weather::initUI()
 {

@@ -1,7 +1,7 @@
 #ifndef SYSMONITOR_H
 #define SYSMONITOR_H
 
-#include "basecard.h"
+#include <base/basecard.h>
 
 /*
  * en：Ethernet

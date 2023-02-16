@@ -25,39 +25,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-        basewidget.cpp \
-    basesetting.cpp \
-    colorradio.cpp \
-    baselabel.cpp \
-    basecard.cpp \
-    dbutil.cpp \
-    sysmonitor.cpp \
-    baseprogress.cpp \
-    basepanel.cpp \
-    widgetspanel.cpp \
-    themepanel.cpp \
-    mainsetting.cpp \
-    weather.cpp \
-    yiyan.cpp \
-    basebutton.cpp
+        main.cpp
 
 HEADERS += \
-        basewidget.h \
-    basesetting.h \
-    colorradio.h \
-    baselabel.h \
-    basecard.h \
-    dbutil.h \
-    sysmonitor.h \
-    baseprogress.h \
-    basepanel.h \
-    widgetspanel.h \
-    themepanel.h \
-    mainsetting.h \
-    weather.h \
-    yiyan.h \
-    basebutton.h
 
 FORMS +=
 
@@ -66,11 +36,11 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
-
 RESOURCES += \
     assets.qrc
 
-QT += sql
 QT += network
 include(./qtsingleapplication/qtsingleapplication.pri)
+include(./base/base.pri)
+include(./widgets/widgets.pri)
+include(./setting/setting.pri)

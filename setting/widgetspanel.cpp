@@ -1,11 +1,10 @@
-#include "dbutil.h"
-#include "dbutil.h"
-#include "sysmonitor.h"
-#include "weather.h"
 #include "widgetspanel.h"
-#include "yiyan.h"
 
 #include <qpushbutton.h>
+#include <base/dbutil.h>
+#include <widgets/sysmonitor.h>
+#include <widgets/weather.h>
+#include <widgets/yiyan.h>
 
 void WidgetsPanel::initUI()
 {

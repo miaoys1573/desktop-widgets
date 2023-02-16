@@ -1,7 +1,5 @@
-#include "baselabel.h"
 #include "sysmonitor.h"
 #include "mainsetting.h"
-#include "dbutil.h"
 #include <QMenu>
 #include <QRegularExpression>
 #include <QStyle>

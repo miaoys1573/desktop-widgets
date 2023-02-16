@@ -1,9 +1,10 @@
 #ifndef WIDGETSPANEL_H
 #define WIDGETSPANEL_H
 
-#include "basecard.h"
-#include "basepanel.h"
 #include <qcheckbox.h>
+
+#include <base/basecard.h>
+#include <base/basepanel.h>
 
 class WidgetsPanel : public BasePanel
 {

@@ -1,11 +1,6 @@
-#include "basepanel.h"
-#include "basewidget.h"
-#include "sysmonitor.h"
-#include "mainsetting.h"
-#include "yiyan.h"
-#include <qsharedmemory.h>
 #include <QApplication>
 #include <qtsingleapplication.h>
+#include <setting/mainsetting.h>
 
 int main(int argc, char *argv[])
 {
@@ -17,8 +12,6 @@ int main(int argc, char *argv[])
 
     MainSetting mainSetting;
     mainSetting.showWidgets();
-//    YiYan yiyan;
-//    yiyan.show();
 
     return app.exec();
 }

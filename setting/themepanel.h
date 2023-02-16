@@ -1,7 +1,7 @@
 #ifndef THEMEPANEL_H
 #define THEMEPANEL_H
 
-#include "basesetting.h"
+#include <base/basesetting.h>
 
 class ThemePanel : public BaseSetting
 {

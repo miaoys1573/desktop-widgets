@@ -1,7 +1,7 @@
 #ifndef WEATHER_H
 #define WEATHER_H
 
-#include "basecard.h"
+#include <base/basecard.h>
 
 class Weather : public BaseCard
 {

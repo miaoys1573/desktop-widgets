@@ -1,10 +1,10 @@
 #ifndef MAINSETTING_H
 #define MAINSETTING_H
 
-#include "basecard.h"
 #include "themepanel.h"
 #include "widgetspanel.h"
 #include <QSystemTrayIcon>
+#include <base/basewidget.h>
 
 class MainSetting : public BaseWidget
 {

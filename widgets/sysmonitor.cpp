@@ -1,9 +1,9 @@
-#include "baselabel.h"
-#include "baseprogress.h"
 #include "sysmonitor.h"
 #include <QNetworkInterface>
 #include <QProcess>
 #include <qhostinfo.h>
+#include <base/baselabel.h>
+#include <base/baseprogress.h>
 
 void SysMonitor::initUI()
 {

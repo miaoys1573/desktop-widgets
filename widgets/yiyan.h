@@ -1,7 +1,7 @@
 #ifndef YIYAN_H
 #define YIYAN_H
 
-#include "basecard.h"
+#include <base/basecard.h>
 
 class YiYanData;
 class YiYan : public BaseCard

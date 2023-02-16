@@ -2,7 +2,6 @@
 #define DBUTIL_H
 
 #include "basesetting.h"
-
 #include <qsqldatabase.h>
 
 class Setting;
