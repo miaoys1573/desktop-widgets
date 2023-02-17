@@ -4,6 +4,7 @@
 #include <base/dbutil.h>
 #include <widgets/sysmonitor.h>
 #include <widgets/weather.h>
+#include <widgets/yiwen.h>
 #include <widgets/yiyan.h>
 
 void WidgetsPanel::initUI()
@@ -48,7 +49,8 @@ void WidgetsPanel::initWidgets()
     {
         new SysMonitor,
         new Weather,
-        new YiYan
+        new YiYan,
+        new YiWen
     };
 }
 

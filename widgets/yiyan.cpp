@@ -40,9 +40,12 @@ void YiYan::changeFontColor(QString color)
 void YiYan::updateData()
 {
     YiYanData yiYanData = this->getYiYanData();
-    QString htmlContent = QString("<div style=\"font-size:24px;font-weight:bold;text-indent:48px;\">%1</div>");
-    this->findChild<BaseLabel*>("content-label")->setText(htmlContent.arg(yiYanData.content));
-    this->findChild<BaseLabel*>("from-label")->setText(yiYanData.from);
+    if (yiYanData.content.length() > 0)
+    {
+        QString htmlContent = QString("<div style=\"font-size:24px;font-weight:bold;text-indent:48px;\">%1</div>");
+        this->findChild<BaseLabel*>("content-label")->setText(htmlContent.arg(yiYanData.content));
+        this->findChild<BaseLabel*>("from-label")->setText(yiYanData.from);
+    }
 }
 
 YiYanData YiYan::getYiYanData()
@@ -68,7 +71,7 @@ YiYanData YiYan::getYiYanData()
     return yiYanData;
 }
 
-YiYan::YiYan(QWidget *parent) : BaseCard("YIYAN", "一言", parent)
+YiYan::YiYan(QWidget *parent) : BaseCard("YIYAN", "每日一言", parent)
 {
     this->initUI();
     this->setTimerInterval(1000 * 60 * 30);
