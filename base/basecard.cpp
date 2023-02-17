@@ -119,7 +119,7 @@ void BaseCard::closeEvent(QCloseEvent *event)
 
 void BaseCard::timerEvent(QTimerEvent *event)
 {
-    if (timerId != -1) {
+    if (timerId != -1 && this->isVisible()) {
         this->updateData();
     }
     QObject::timerEvent(event);
