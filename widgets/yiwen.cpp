@@ -1,10 +1,13 @@
 #include "yiwen.h"
 
+#include <QDesktopServices>
 #include <QTextBrowser>
 #include <qeventloop.h>
 #include <qnetworkaccessmanager.h>
 #include <qnetworkreply.h>
 #include <qnetworkrequest.h>
+
+#include <base/baselabel.h>
 
 void YiWen::initUI()
 {
@@ -16,7 +19,12 @@ void YiWen::initUI()
     contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
     contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    BaseLabel *fromLabel = new BaseLabel("from-label");
+    fromLabel->setStyleSheet("margin-top:8px;");
+    fromLabel->setOpenExternalLinks(true);
+
     layout->addWidget(contentTextBrowser);
+    layout->addWidget(fromLabel, 0, Qt::AlignRight);
 
     this->updateData();
 }
@@ -25,6 +33,12 @@ void YiWen::changeFontColor(QString color)
 {
     QString styleSheet = QString("background:rgba(0,0,0,0);color:%1").arg(color);
     this->findChild<QTextBrowser*>("content-text-browser")->setStyleSheet(styleSheet);
+    QPalette palette;
+    palette.setColor(QPalette::WindowText, color);
+    BaseLabel *fromLabel = this->findChild<BaseLabel*>("from-label");
+    QString from = QString("—— 内容来源于「<a style='color:%1;text-decoration:none' href='https://meiriyiwen.com'>每日一文</a>」");
+    fromLabel->setText(from.arg(color));
+    fromLabel->setPalette(palette);
     BaseCard::changeFontColor(color);
 }
 
@@ -67,6 +81,7 @@ QString YiWen::getYiWenData()
                 result.append(*line);
             }
         }
+        result.append("<p style=\"text-align:center;\">— End —</p>");
         return result.join("");
     }
     return "";
