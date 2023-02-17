@@ -12,12 +12,12 @@
 
 void YiYan::initUI()
 {
-    BaseLabel *contentLabel = new BaseLabel("", "content-label");
+    BaseLabel *contentLabel = new BaseLabel("content-label");
     contentLabel->setFixedHeight(160);
     contentLabel->setWordWrap(true);
     contentLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     contentLabel->setTextFormat(Qt::RichText);
-    BaseLabel *fromLabel = new BaseLabel("", "from-label");
+    BaseLabel *fromLabel = new BaseLabel("from-label");
 
     layout->addWidget(contentLabel, 0, Qt::AlignVCenter);
     layout->addWidget(fromLabel, 0, Qt::AlignRight);

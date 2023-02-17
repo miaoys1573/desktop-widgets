@@ -5,35 +5,37 @@
 
 void BaseCard::initUI()
 {
-    // 数据初始化
+    // 默认不显示刷新按钮
     showRefreshButton = false;
+
+    // 初始化字体图标
     int fontId = QFontDatabase::addApplicationFont(":/assets/fonts/iconfont.ttf");
     QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
     iconFont = QFont(fontFamily);
     fontMap.insert("refresh", QChar(0xe981));
     fontMap.insert("setting", QChar(0xe979));
     fontMap.insert("close", QChar(0xe980));
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->setAlignment(Qt::AlignTop);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    this->setLayout(mainLayout);
 
     // 按钮组
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
     BaseButton *refreshButton = this->createButton("refresh");
     refreshButton->setVisible(showRefreshButton);
     buttonsLayout->addWidget(refreshButton, 0, Qt::AlignLeft);
-    BaseButton *settingButton = this->createButton("setting");
-    BaseButton *closeButton = this->createButton("close");
-    buttonsLayout->addWidget(settingButton, 0, Qt::AlignRight);
-    buttonsLayout->addWidget(closeButton, 0, Qt::AlignRight);
+    buttonsLayout->addWidget(this->createButton("setting"), 0, Qt::AlignRight);
+    buttonsLayout->addWidget(this->createButton("close"), 0, Qt::AlignRight);
     buttonsLayout->setAlignment(Qt::AlignRight);
     buttonsLayout->setContentsMargins(8, 8, 8, 5);
 
+    // 初始化主布局
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->setAlignment(Qt::AlignTop);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    this->setLayout(mainLayout);
+
     // 添加到主布局
-    mainLayout->addLayout(buttonsLayout);
     layout = new QVBoxLayout();
     layout->setContentsMargins(15, 0, 15, 15);
+    mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(layout);
 
     // 加载样式
@@ -45,9 +47,8 @@ void BaseCard::initUI()
 
 void BaseCard::loadStyleSheet()
 {
-    QStringList styleSheet;
-    styleSheet.append("#refresh-button,#setting-button,#close-button{width:15px;height:16px;padding:0;background:rgba(0,0,0,0);}");
-    setStyleSheet(styleSheet.join(""));
+    QString styleSheet = "#refresh-button,#setting-button,#close-button{width:15px;height:16px;padding:0;background:rgba(0,0,0,0);}";
+    setStyleSheet(styleSheet);
 }
 
 void BaseCard::initSignalSlots()
@@ -61,9 +62,11 @@ void BaseCard::initSignalSlots()
         connect(_setting->findChild<QRadioButton*>(QString("background-pure-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeBackground()));
         connect(_setting->findChild<QRadioButton*>(QString("font-pure-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeFontColor()));
     }
+
     for (int i = 1; i <= _setting->getPresets().size(); i++) {
         connect(_setting->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeBackground()));
     }
+
     connect(_setting->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)), this, SLOT(changeBackgroundAlpha(int)));
 }
 
@@ -78,7 +81,9 @@ BaseButton *BaseCard::createButton(QString name)
 void BaseCard::showEvent(QShowEvent *event)
 {
     Setting setting = DbUtil::findSetting(name);
+
     if (setting.inited) {
+        // 数据回显
         this->move(setting.positionX, setting.positionY);
         if ((int)BaseSetting::PureColor == setting.backgroundType) {
             _setting->findChild<ColorRadio*>("background-pure-color")->click();
@@ -90,11 +95,14 @@ void BaseCard::showEvent(QShowEvent *event)
         }
         _setting->findChild<ColorRadio*>(QString("font-pure-color-radio%1").arg(setting.fontColorIndex + 1))->click();
     } else {
+        // 初始化设置面板
         _setting->initSetting();
     }
+
     if (this->height() < 240) {
         this->setFixedHeight(240);
     }
+
     BaseWidget::showEvent(event);
 }
 
@@ -139,8 +147,10 @@ void BaseCard::changeBackground()
             if (colorRadio->isChecked()) {
                 QColor color = _setting->getColors().at(i - 1);
                 backgroundPureColorIndex = i - 1;
+                // 更新样式
                 this->setBrush(QColor(color.red(), color.green(), color.blue(), backgroundPureColorAlpha));
                 this->update();
+                // 保存设置
                 QStringList values = {QString::number((int)BaseSetting::PureColor), QString::number(i - 1)};
                 DbUtil::updateSetting(name, {"background_type", "background_pure_color_index"}, values);
                 break;
@@ -151,8 +161,10 @@ void BaseCard::changeBackground()
             QRadioButton *colorRadio = _setting->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i));
             if (colorRadio->isChecked()) {
                 QGradient::Preset preset = _setting->getPresets().at(i - 1);
+                // 更新样式
                 this->setBrush(QBrush(QGradient(preset)));
                 this->update();
+                // 保存设置
                 QStringList values = {QString::number((int)BaseSetting::GradientColor), QString::number(i - 1)};
                 DbUtil::updateSetting(name, {"background_type", "background_gradient_color_index"}, values);
                 break;
@@ -168,8 +180,10 @@ void BaseCard::changeBackgroundAlpha(int transparence)
     backgroundPureColorAlpha = alpha;
     QColor backgroundPureColor = _setting->getColors().at(backgroundPureColorIndex);
     QColor color = QColor(backgroundPureColor.red(), backgroundPureColor.green(), backgroundPureColor.blue(), alpha);
+    // 更新样式
     this->setBrush(QBrush(color));
     this->update();
+    // 保存设置
     QStringList values = {QString::number(backgroundPureColorIndex), QString::number(transparence)};
     DbUtil::updateSetting(name, {"background_pure_color_index", "background_pure_color_transparence"}, values);
 }
@@ -181,7 +195,9 @@ void BaseCard::changeFontColor()
         QRadioButton *fontColorRadio = _setting->findChild<QRadioButton*>(QString("font-pure-color-radio%1").arg(i));
         if (fontColorRadio->isChecked()) {
             QString color = _setting->getColors().at(i - 1);
+            // 更新样式
             this->changeFontColor(color);
+            // 保存设置
             DbUtil::updateSetting(name, "font_color_index", i - 1);
             break;
         }

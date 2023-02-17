@@ -15,6 +15,7 @@ public:
     Q_ENUM(type);
 
     BaseLabel(QWidget *parent = 0);
+    BaseLabel(QString objectName, QWidget *parent = 0);
     BaseLabel(QString text, QString objectName, QWidget *parent = 0);
     BaseLabel(QString text, QString objectName, QString styleSheet, QWidget *parent = 0);
     BaseLabel(QString text, QString objectName, BaseLabel::type labeltype, QWidget *parent = 0);

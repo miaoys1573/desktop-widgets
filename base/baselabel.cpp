@@ -6,6 +6,12 @@ BaseLabel::BaseLabel(QWidget *parent)
 
 }
 
+BaseLabel::BaseLabel(QString objectName, QWidget *parent)
+    : QLabel (parent)
+{
+    this->setObjectName(objectName);
+}
+
 BaseLabel::BaseLabel(QString text, QString objectName, QWidget *parent)
     : QLabel (text, parent)
 {

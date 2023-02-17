@@ -217,6 +217,7 @@ QLayout *BaseSetting::createBackgroundTypeLayout()
 void BaseSetting::toggleBackgroundColorPanel()
 {
     Setting setting = DbUtil::findSetting(name);
+
     this->findChild<QLabel*>("theme-item-color")->show();
     if (this->findChild<ColorRadio*>("background-pure-color")->isChecked()) {
         this->backgroundType = BaseSetting::PureColor;

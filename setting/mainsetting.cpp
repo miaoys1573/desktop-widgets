@@ -1,7 +1,5 @@
-#include "sysmonitor.h"
 #include "mainsetting.h"
 #include <QMenu>
-#include <QRegularExpression>
 #include <QStyle>
 #include <qbuttongroup.h>
 #include <qpushbutton.h>
@@ -80,13 +78,16 @@ void MainSetting::initSignalSlots()
     connect(this->findChild<QRadioButton*>("theme-menu"), SIGNAL(clicked()), this, SLOT(toggleContentPanel()));
 
     connect(widgetsPanel->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(close()));
+
     // 主题面板
     connect(themePanel->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(close()));
     QList<BaseCard*> widgets = widgetsPanel->getWidgets();
     foreach (BaseCard *widget, widgets) {
+
         connect(widget->findChild<QPushButton*>("setting-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
         connect(widget->getSetting()->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
         connect(widget->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
+
         // 背景类型
         connect(themePanel->findChild<ColorRadio*>("background-pure-color"), SIGNAL(clicked()),
                 widget->getSetting()->findChild<ColorRadio*>("background-pure-color"), SLOT(click()));
@@ -96,6 +97,7 @@ void MainSetting::initSignalSlots()
                 widget->getSetting()->findChild<ColorRadio*>("background-gradient-color"), SLOT(click()));
         connect(themePanel->findChild<ColorRadio*>("background-gradient-color"), SIGNAL(clicked()),
                 widget->getSetting()->findChild<ColorRadio*>("background-gradient-color-radio1"), SLOT(click()));
+
         // 纯色背景 + 字体
         for (int i = 1; i <= themePanel->getColors().size(); i++) {
             connect(themePanel->findChild<QRadioButton*>(QString("background-pure-color-radio%1").arg(i)), SIGNAL(clicked()),
@@ -103,18 +105,22 @@ void MainSetting::initSignalSlots()
             connect(themePanel->findChild<QRadioButton*>(QString("font-pure-color-radio%1").arg(i)), SIGNAL(clicked()),
                     widget->getSetting()->findChild<QRadioButton*>(QString("font-pure-color-radio%1").arg(i)), SLOT(click()));
         }
+
         // 渐变色背景
         for (int i = 1; i <= themePanel->getPresets().size(); i++) {
             connect(themePanel->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i)), SIGNAL(clicked()),
                     widget->getSetting()->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i)), SLOT(click()));
         }
+
         // 纯色背景透明度
         connect(themePanel->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)),
                 widget->getSetting()->findChild<QSlider*>("theme-item-slider"), SLOT(setValue(int)));
+
         // 重置按钮
         connect(themePanel->findChild<QPushButton*>("reset-button"), SIGNAL(clicked()),
                 widget->getSetting()->findChild<QPushButton*>("reset-button"), SLOT(click()));
     }
+
     connect(themePanel->findChild<ColorRadio*>("background-pure-color"), SIGNAL(clicked()),
             this, SLOT(backgroundTypeClick()));
 

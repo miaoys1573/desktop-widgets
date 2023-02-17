@@ -1,3 +1,4 @@
+#include "basebutton.h"
 #include "basepanel.h"
 
 #include <QtEvents>
@@ -20,11 +21,8 @@ void BasePanel::initUI()
     // 关闭按钮
     QStyle *style = this->style();
     QIcon icon = style->standardIcon(QStyle::SP_DialogCloseButton);
-    QPushButton *closeButton = new QPushButton();
-    closeButton->setObjectName("close-button");
+    BaseButton *closeButton = new BaseButton("close-button");
     closeButton->setIcon(icon);
-    closeButton->setCursor(QCursor(Qt::PointingHandCursor));
-    closeButton->setFocusPolicy(Qt::NoFocus);
 
     // 内容区
     layout = new QVBoxLayout;

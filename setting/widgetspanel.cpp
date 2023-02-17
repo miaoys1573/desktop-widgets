@@ -11,6 +11,7 @@ void WidgetsPanel::initUI()
     QGridLayout *contentlayout = new QGridLayout;
     contentlayout->setAlignment(Qt::AlignTop);
     contentlayout->setSpacing(10);
+
     for (int i = 0; i < widgets.size(); i++)
     {
         QString name = widgets.at(i)->name;
@@ -57,12 +58,14 @@ QCheckBox *WidgetsPanel::createWidgetItem(QString name, QString objectName)
     widgetItem->setObjectName(objectName);
     widgetItem->setCursor(QCursor(Qt::PointingHandCursor));
     widgetItem->setFocusPolicy(Qt::NoFocus);
+
     QStringList styleSheet;
     styleSheet.append(QString("#%1{background:#FFFFFF;border-radius:5px;height:40px;}").arg(objectName));
     styleSheet.append(QString("#%1::indicator{width:40px;height:40px;background:#FFFFFF;border-radius:5px;}").arg(objectName));
     styleSheet.append(QString("#%1::indicator:checked{padding:7px;width:26px;height:26px;image:url(:/assets/icons/check.svg)}")
                       .arg(objectName));
     widgetItem->setStyleSheet(styleSheet.join(""));
+
     return widgetItem;
 }
 

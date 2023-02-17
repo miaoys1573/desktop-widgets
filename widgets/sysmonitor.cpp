@@ -9,13 +9,13 @@ void SysMonitor::initUI()
 {
     QGridLayout *layout1 = new QGridLayout;
     layout1->addWidget(new BaseLabel("主机名", "hostname-label"), 0, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("", "hostname"), 0, 1, Qt::AlignRight);
+    layout1->addWidget(new BaseLabel("hostname"), 0, 1, Qt::AlignRight);
     layout1->addWidget(new BaseLabel("系统版本", "product-version-label"), 1, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("", "product-version"), 1, 1, Qt::AlignRight);
+    layout1->addWidget(new BaseLabel("product-version"), 1, 1, Qt::AlignRight);
     layout1->addWidget(new BaseLabel("内核", "kernel-version-label"), 2, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("", "kernel-version"), 2, 1, Qt::AlignRight);
+    layout1->addWidget(new BaseLabel("kernel-version"), 2, 1, Qt::AlignRight);
     layout1->addWidget(new BaseLabel("网络", "network-label"), 3, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("", "network"), 3, 1, Qt::AlignRight);
+    layout1->addWidget(new BaseLabel("network"), 3, 1, Qt::AlignRight);
 
     QVBoxLayout *layout2 = new QVBoxLayout;
     layout2->addWidget(new BaseLabel("CPU使用：", "cpu-usage"), Qt::AlignLeft);
@@ -54,10 +54,14 @@ void SysMonitor::updateData()
     this->findChild<BaseLabel*>("network")->setText(sysMonitorData.network);
     this->findChild<BaseLabel*>("cpu-usage")->setText(QString("CPU使用：%1%").arg(sysMonitorData.cpuUsage));
     this->findChild<BaseProgress*>("cpu-usage-progress")->setValue(sysMonitorData.cpuUsage);
+
+    // 内存
     QString ramInfo = QString("内存使用：%1GB/%2GB - %3%")
             .arg(sysMonitorData.usedRam).arg(sysMonitorData.totalRam).arg(sysMonitorData.ramUsage);
     this->findChild<BaseLabel*>("ram-usage")->setText(ramInfo);
     this->findChild<BaseProgress*>("ram-usage-progress")->setValue(sysMonitorData.ramUsage);
+
+    // 交换空间
     BaseLabel *swapUsageLabel = this->findChild<BaseLabel*>("swap-usage");
     BaseProgress *swapUsageProgress = this->findChild<BaseProgress*>("swap-usage-progress");
     if (sysMonitorData.totalSwap > 0) {
