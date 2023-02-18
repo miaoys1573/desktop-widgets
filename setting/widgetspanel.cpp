@@ -2,6 +2,8 @@
 
 #include <qpushbutton.h>
 #include <base/dbutil.h>
+#include <widgets/movie.h>
+#include <widgets/news.h>
 #include <widgets/sysmonitor.h>
 #include <widgets/weather.h>
 #include <widgets/yiwen.h>
@@ -50,7 +52,9 @@ void WidgetsPanel::initWidgets()
         new SysMonitor,
         new Weather,
         new YiYan,
-        new YiWen
+        new YiWen,
+        new Movie,
+        new News
     };
 }
 

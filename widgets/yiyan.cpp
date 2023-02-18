@@ -12,6 +12,7 @@
 
 void YiYan::initUI()
 {
+
     BaseLabel *contentLabel = new BaseLabel("content-label");
     contentLabel->setFixedHeight(160);
     contentLabel->setWordWrap(true);
@@ -42,7 +43,7 @@ void YiYan::updateData()
     YiYanData yiYanData = this->getYiYanData();
     if (yiYanData.content.length() > 0)
     {
-        QString htmlContent = QString("<div style=\"font-size:24px;font-weight:bold;text-indent:48px;\">%1</div>");
+        QString htmlContent = QString("<div style='font-size:24px;font-weight:bold;text-indent:48px;'>%1</div>");
         this->findChild<BaseLabel*>("content-label")->setText(htmlContent.arg(yiYanData.content));
         this->findChild<BaseLabel*>("from-label")->setText(yiYanData.from);
     }

@@ -75,7 +75,7 @@ void SysMonitor::updateData()
         this->findChild<BaseLabel*>("kernel-version")->setText(sysMonitorData.kernelVersion);
         this->findChild<BaseLabel*>("network")->setText(sysMonitorData.network);
     } else {
-        QString valueTemplate = "<div style=\"text-align:right;\">%1</div>";
+        QString valueTemplate = "<div style='text-align:right;'>%1</div>";
         QStringList value;
         value.append(valueTemplate.arg(sysMonitorData.hostname));
         value.append(valueTemplate.arg(sysMonitorData.productVersion));

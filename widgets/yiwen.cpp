@@ -68,11 +68,11 @@ QString YiWen::getYiWenData()
             }
             if (start)
             {
-                line = line.replace("class=\"article_text\"", "style=\"font-size:18px;\"");
+                line = line.replace("class=\"article_text\"", "style='font-size:18px;'");
                 result.append(line);
             }
         }
-        result.append("<p style=\"text-align:center;\">— End —</p>");
+        result.append("<p style='text-align:center;'>— End —</p>");
         return result.join("");
     }
     return "";
