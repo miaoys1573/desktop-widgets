@@ -15,16 +15,12 @@ void YiWen::initUI()
 
     QTextBrowser *contentTextBrowser = new QTextBrowser();
     contentTextBrowser->setObjectName("content-text-browser");
+    contentTextBrowser->setStyleSheet("padding:5px 5px 10px 5px;");
     contentTextBrowser->setTextInteractionFlags(Qt::NoTextInteraction);
     contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
     contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    BaseLabel *fromLabel = new BaseLabel("from-label");
-    fromLabel->setStyleSheet("margin-top:8px;");
-    fromLabel->setOpenExternalLinks(true);
-
     layout->addWidget(contentTextBrowser);
-    layout->addWidget(fromLabel, 0, Qt::AlignRight);
 
     this->updateData();
 }
@@ -33,12 +29,6 @@ void YiWen::changeFontColor(QString color)
 {
     QString styleSheet = QString("background:rgba(0,0,0,0);color:%1").arg(color);
     this->findChild<QTextBrowser*>("content-text-browser")->setStyleSheet(styleSheet);
-    QPalette palette;
-    palette.setColor(QPalette::WindowText, color);
-    BaseLabel *fromLabel = this->findChild<BaseLabel*>("from-label");
-    QString from = QString("—— 内容来源于「<a style='color:%1;text-decoration:none' href='https://meiriyiwen.com'>每日一文</a>」");
-    fromLabel->setText(from.arg(color));
-    fromLabel->setPalette(palette);
     BaseCard::changeFontColor(color);
 }
 
@@ -66,19 +56,20 @@ QString YiWen::getYiWenData()
         QStringList data = QString(reply->readAll()).split("\n");
         bool start = false;
         QStringList result;
-        for(QList<QString>::iterator line = data.begin(); line != data.end(); line++) {
-            if (line->contains("<div id=\"article_show\">"))
+        foreach (QString line, data)
+        {
+            if (line.contains("<div id=\"article_show\">"))
             {
                 start = true;
             }
-            if (line->contains("<div id=\"bdshare"))
+            if (line.contains("<div id=\"bdshare"))
             {
                 start = false;
             }
             if (start)
             {
-                *line = line->replace("class=\"article_text\"", "style=\"font-size:18px;\"");
-                result.append(*line);
+                line = line.replace("class=\"article_text\"", "style=\"font-size:18px;\"");
+                result.append(line);
             }
         }
         result.append("<p style=\"text-align:center;\">— End —</p>");

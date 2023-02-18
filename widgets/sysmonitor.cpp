@@ -7,15 +7,30 @@
 
 void SysMonitor::initUI()
 {
-    QGridLayout *layout1 = new QGridLayout;
-    layout1->addWidget(new BaseLabel("主机名", "hostname-label"), 0, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("hostname"), 0, 1, Qt::AlignRight);
-    layout1->addWidget(new BaseLabel("系统版本", "product-version-label"), 1, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("product-version"), 1, 1, Qt::AlignRight);
-    layout1->addWidget(new BaseLabel("内核", "kernel-version-label"), 2, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("kernel-version"), 2, 1, Qt::AlignRight);
-    layout1->addWidget(new BaseLabel("网络", "network-label"), 3, 0, Qt::AlignLeft);
-    layout1->addWidget(new BaseLabel("network"), 3, 1, Qt::AlignRight);
+    SysMonitorData sysMonitorData = this->getSysMonitorData();
+
+    if (sysMonitorData.totalSwap == 0) {
+        QGridLayout *layout1 = new QGridLayout;
+        layout1->addWidget(new BaseLabel("主机名", "hostname-label"), 0, 0, Qt::AlignLeft);
+        layout1->addWidget(new BaseLabel("hostname"), 0, 1, Qt::AlignRight);
+        layout1->addWidget(new BaseLabel("系统版本", "product-version-label"), 1, 0, Qt::AlignLeft);
+        layout1->addWidget(new BaseLabel("product-version"), 1, 1, Qt::AlignRight);
+        layout1->addWidget(new BaseLabel("内核", "kernel-version-label"), 2, 0, Qt::AlignLeft);
+        layout1->addWidget(new BaseLabel("kernel-version"), 2, 1, Qt::AlignRight);
+        layout1->addWidget(new BaseLabel("网络", "network-label"), 3, 0, Qt::AlignLeft);
+        layout1->addWidget(new BaseLabel("network"), 3, 1, Qt::AlignRight);
+
+        layout->addLayout(layout1);
+    } else {
+        QHBoxLayout *layout1 = new QHBoxLayout;
+        layout1->addWidget(new BaseLabel("主机名\n系统版本\n内核\n网络", "title-label"), Qt::AlignLeft);
+        BaseLabel *valueLabel = new BaseLabel("value-label");
+        valueLabel->setTextFormat(Qt::RichText);
+        valueLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+        layout1->addWidget(valueLabel, Qt::AlignRight);
+
+        layout->addLayout(layout1);
+    }
 
     QVBoxLayout *layout2 = new QVBoxLayout;
     layout2->addWidget(new BaseLabel("CPU使用：", "cpu-usage"), Qt::AlignLeft);
@@ -24,11 +39,16 @@ void SysMonitor::initUI()
     layout2->addWidget(new BaseProgress("ram-usage-progress"));
     layout2->addWidget(new BaseLabel("交换空间使用：", "swap-usage"), Qt::AlignLeft);
     layout2->addWidget(new BaseProgress("swap-usage-progress"));
-    layout2->setContentsMargins(0, 5, 0, 0);
     layout2->setAlignment(Qt::AlignBottom);
+    layout2->setContentsMargins(0, 0, 0, 2);
 
-    layout->addLayout(layout1);
     layout->addLayout(layout2);
+    layout->setContentsMargins(15, 0, 15, 10);
+
+    if (sysMonitorData.totalSwap == 0) {
+        layout2->setContentsMargins(0, 12, 0, 5);
+        layout->setContentsMargins(15, 5, 15, 15);
+    }
 
     this->updateData();
 }
@@ -48,10 +68,22 @@ void SysMonitor::changeFontColor(QString color)
 void SysMonitor::updateData()
 {
     SysMonitorData sysMonitorData = this->getSysMonitorData();
-    this->findChild<BaseLabel*>("hostname")->setText(sysMonitorData.hostname);
-    this->findChild<BaseLabel*>("product-version")->setText(sysMonitorData.productVersion);
-    this->findChild<BaseLabel*>("kernel-version")->setText(sysMonitorData.kernelVersion);
-    this->findChild<BaseLabel*>("network")->setText(sysMonitorData.network);
+
+    if (sysMonitorData.totalSwap == 0) {
+        this->findChild<BaseLabel*>("hostname")->setText(sysMonitorData.hostname);
+        this->findChild<BaseLabel*>("product-version")->setText(sysMonitorData.productVersion);
+        this->findChild<BaseLabel*>("kernel-version")->setText(sysMonitorData.kernelVersion);
+        this->findChild<BaseLabel*>("network")->setText(sysMonitorData.network);
+    } else {
+        QString valueTemplate = "<div style=\"text-align:right;\">%1</div>";
+        QStringList value;
+        value.append(valueTemplate.arg(sysMonitorData.hostname));
+        value.append(valueTemplate.arg(sysMonitorData.productVersion));
+        value.append(valueTemplate.arg(sysMonitorData.kernelVersion));
+        value.append(valueTemplate.arg(sysMonitorData.network));
+        this->findChild<BaseLabel*>("value-label")->setText(value.join(""));
+    }
+
     this->findChild<BaseLabel*>("cpu-usage")->setText(QString("CPU使用：%1%").arg(sysMonitorData.cpuUsage));
     this->findChild<BaseProgress*>("cpu-usage-progress")->setValue(sysMonitorData.cpuUsage);
 

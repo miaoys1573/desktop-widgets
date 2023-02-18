@@ -40,7 +40,7 @@ public:
     double totalRam;
     double usedRam;
     double ramUsage;
-    double totalSwap;
+    double totalSwap = 0;
     double usedSwap;
     double swapUsage;
     double cpuUsage;
