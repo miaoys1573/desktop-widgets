@@ -21,8 +21,10 @@ void Movie::initUI()
     titleLabel->setOpenExternalLinks(true);
     titleLabel->setContextMenuPolicy(Qt::NoContextMenu);
     BaseLabel *summaryLabel = new BaseLabel("summary-label");
-    BaseLabel *descLabel = new BaseLabel("", "desc-label", "font-size:16px;margin-top:8px;font-style:italic");
+    BaseLabel *descLabel = new BaseLabel("", "desc-label", "font-size:16px;font-weight:bold;margin-top:8px;font-style:italic");
     descLabel->setWordWrap(true);
+    descLabel->setFixedWidth(231);
+    descLabel->setMinimumHeight(84);
 
     QVBoxLayout *layout2 = new QVBoxLayout;
     layout2->setContentsMargins(8, 0, 0, 0);
