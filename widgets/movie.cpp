@@ -9,6 +9,7 @@
 #include <qnetworkrequest.h>
 
 #include <base/baselabel.h>
+#include <base/constants.h>
 
 void Movie::initUI()
 {
@@ -17,11 +18,13 @@ void Movie::initUI()
     QHBoxLayout *layout1 = new QHBoxLayout;
 
     BaseLabel *imageLabel = new BaseLabel("image-label");
-    BaseLabel *titleLabel = new BaseLabel("", "title-label", "font-size:20px;font-weight:bold;padding:0;");
+    BaseLabel *titleLabel = new BaseLabel("", "title-label", BaseLabel::TitleLabel);
     titleLabel->setOpenExternalLinks(true);
     titleLabel->setContextMenuPolicy(Qt::NoContextMenu);
     BaseLabel *summaryLabel = new BaseLabel("summary-label");
-    BaseLabel *descLabel = new BaseLabel("", "desc-label", "font-size:16px;font-weight:bold;margin-top:8px;font-style:italic");
+    QString descLabelStyle = QString("font-size:%1px;font-weight:bold;margin-top:8px;font-style:italic")
+            .arg(Constants::CONTENT_FONT_SIZE - 2);
+    BaseLabel *descLabel = new BaseLabel("", "desc-label", descLabelStyle);
     descLabel->setWordWrap(true);
     descLabel->setFixedWidth(231);
     descLabel->setMinimumHeight(84);

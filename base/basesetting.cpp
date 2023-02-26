@@ -2,12 +2,12 @@
 #include "baselabel.h"
 #include "basebutton.h"
 #include "dbutil.h"
+#include "constants.h"
+#include "closebutton.h"
+#include "slider.h"
 #include <QButtonGroup>
 #include <QFile>
 #include <QMetaEnum>
-#include <QScrollArea>
-#include <QSizePolicy>
-#include <QSlider>
 #include <QStyle>
 
 void BaseSetting::initUI()
@@ -27,18 +27,11 @@ void BaseSetting::initUI()
 void BaseSetting::setTitleBar()
 {
     // 内容
-    BaseLabel *title = new BaseLabel("", "title-label", BaseLabel::TitleLabel, "padding:0;");
-    QStyle *style = this->style();
-    QIcon icon = style->standardIcon(QStyle::SP_DialogCloseButton);
-    BaseButton *closeButton = new BaseButton("close-button");
-    closeButton->setIcon(icon);
-
-    // 布局
     QGridLayout *titleBarLayout = new QGridLayout;
     titleBarLayout->setContentsMargins(0, 0, 0, 0);
     titleBarLayout->addWidget(new QLabel, 0, 0);
-    titleBarLayout->addWidget(title, 0, 1, Qt::AlignCenter);
-    titleBarLayout->addWidget(closeButton, 0, 2, Qt::AlignRight);
+    titleBarLayout->addWidget(new BaseLabel("", "title-label", BaseLabel::TitleLabel, "padding:0;"), 0, 1, Qt::AlignCenter);
+    titleBarLayout->addWidget(new CloseButton, 0, 2, Qt::AlignRight);
 
     // 添加到主布局
     layout->addLayout(titleBarLayout);
@@ -47,33 +40,31 @@ void BaseSetting::setTitleBar()
 void BaseSetting::setThemePanel()
 {
     // 内容
-    QFrame *themeFrame = new QFrame();
-    themeFrame->setObjectName("theme-frame");
-    QSlider *themeItemSlider = new QSlider;
-    themeItemSlider->setObjectName("theme-item-slider");
-    themeItemSlider->setRange(0, 100);
-    themeItemSlider->setOrientation(Qt::Horizontal);
-    themeItemSlider->setCursor(QCursor(Qt::PointingHandCursor));
+    QString settingItemTitleMarginTop = QString("margin-top:%1px").arg(Constants::SETTING_ITEM_TITLE_MARGIN_TOP);
 
-    // 布局
-    QString paddingTop = "padding-top:10px";
     QVBoxLayout *themeLayout = new QVBoxLayout;
-    QHBoxLayout *themeItemLayout = new QHBoxLayout;
-    themeItemLayout->addWidget(new BaseLabel("透明度", "theme-item-transparence", BaseLabel::ContentLabel, paddingTop), 0, Qt::AlignLeft);
-    themeItemLayout->addWidget(new BaseLabel("0%", "theme-item-transparence-value", BaseLabel::ContentLabel, paddingTop), 0, Qt::AlignRight);
-    themeLayout->addWidget(new BaseLabel("背景", "theme-item-background", BaseLabel::ContentLabel));
+    themeLayout->addWidget(new BaseLabel("背景", "theme-item-background"));
     themeLayout->addLayout(this->createBackgroundTypeLayout());
-    themeLayout->addWidget(new BaseLabel("颜色", "theme-item-color", BaseLabel::ContentLabel, paddingTop));
+    themeLayout->addWidget(new BaseLabel("颜色", "theme-item-color", settingItemTitleMarginTop));
     themeLayout->addWidget(this->createPureColorPanel("background"));
     themeLayout->addWidget(this->createGradientColorPanel("background"));
+
+    QHBoxLayout *themeItemLayout = new QHBoxLayout;
+    themeItemLayout->addWidget(new BaseLabel("透明度", "theme-item-transparence", settingItemTitleMarginTop), 0, Qt::AlignLeft);
+    themeItemLayout->addWidget(new BaseLabel("0%", "theme-item-transparence-value", settingItemTitleMarginTop), 0, Qt::AlignRight);
     themeLayout->addLayout(themeItemLayout);
-    themeLayout->addWidget(themeItemSlider);
-    themeLayout->addWidget(new BaseLabel("字体", "theme-item-font", BaseLabel::ContentLabel, paddingTop));
+
+    themeLayout->addWidget(new Slider);
+    themeLayout->addWidget(new BaseLabel("字体", "theme-item-font", settingItemTitleMarginTop));
     themeLayout->addWidget(this->createPureColorPanel("font"));
+
+    QFrame *themeFrame = new QFrame();
+    themeFrame->setObjectName("theme-frame");
     themeFrame->setLayout(themeLayout);
 
     // 添加到主布局
-    layout->addWidget(new BaseLabel("主题", "theme-label", BaseLabel::TitleLabel));
+    QString settingItemMarginTop = QString("margin:%1px 0").arg(Constants::SETTING_ITEM_MARGIN_TOP / 4);
+    layout->addWidget(new BaseLabel("主题", "theme-label", BaseLabel::TitleLabel, settingItemMarginTop));
     layout->addWidget(themeFrame);
 }
 
@@ -84,13 +75,13 @@ void BaseSetting::setResetPanel()
     resetFrame->setObjectName("reset-frame");
     BaseButton *resetButton = new BaseButton("恢复默认", "reset-button");
 
-    // 布局
     QVBoxLayout *resetLayout = new QVBoxLayout;
     resetLayout->addWidget(resetButton);
     resetFrame->setLayout(resetLayout);
 
     // 添加到主布局
-    layout->addWidget(new BaseLabel("重置", "reset-label", BaseLabel::TitleLabel, "padding-top:20px;"));
+    QString marginTop = QString("margin:%1px 0 %2px 0").arg(Constants::SETTING_ITEM_MARGIN_TOP).arg(Constants::SETTING_ITEM_MARGIN_TOP / 4);
+    layout->addWidget(new BaseLabel("重置", "reset-label", BaseLabel::TitleLabel, marginTop));
     layout->addWidget(resetFrame);
     layout->addWidget(new BaseLabel);
 }
@@ -99,46 +90,26 @@ void BaseSetting::loadStyleSheet()
 {
     QStringList settingStyle;
     // 设置项
-    QString contentStyle = "{background:#FFFFFF;border-radius:10px;padding:%1;}";
-
-    // 标题栏
-    settingStyle.append("#close-button{border-style:none;padding:8px;border-radius:5px;background:#EFEFEF;}");
-    settingStyle.append("#close-button:hover{background:#E4E4E4;}");
-
+    QString contentStyle = QString("{background:%1;border-radius:%2px;padding:%3px;}")
+            .arg(Constants::MAIN_BACKGROUND_1).arg(Constants::SETTING_ITEM_RADIUS).arg("%1");
     // 主题
-    settingStyle.append("#theme-frame" + contentStyle.arg("5px"));
-    int sliderHeight = 10;
-    QString normalColor = "#ECECEC";
-    QString grooveColor = "#1ABC9C";
-    QString handleBorderColor = "#1ABC9C";
-    QString handleColor = "#FFFFFF";
-    int sliderRadius = sliderHeight / 2;
-    int handleWidth = (sliderHeight * 3) / 2 + (sliderHeight / 5) + 1;
-    int handleRadius = handleWidth / 2;
-    int handleOffset = handleRadius / 2;
-    settingStyle.append(QString("QSlider::horizontal{min-height:%1px;}").arg(sliderHeight * 2));
-    settingStyle.append(QString("QSlider::groove:horizontal{background:%1;height:%2px;border-radius:%3px;}")
-                       .arg(normalColor).arg(sliderHeight).arg(sliderRadius));
-    settingStyle.append(QString("QSlider::add-page:horizontal{background:%1;height:%2px;border-radius:%3px;}")
-                       .arg(normalColor).arg(sliderHeight).arg(sliderRadius));
-    settingStyle.append(QString("QSlider::sub-page:horizontal{background:%1;height:%2px;border-radius:%3px;}")
-                       .arg(grooveColor).arg(sliderHeight).arg(sliderRadius));
-    settingStyle.append(QString("QSlider::handle:horizontal{width:%3px;margin-top:-%4px;margin-bottom:-%4px;border-radius:%5px;"
-                        "background:qradialgradient(spread:pad,cx:0.5,cy:0.5,radius:0.5,fx:0.5,fy:0.5,stop:0.6 %1,stop:0.8 %2);}")
-                       .arg(handleColor).arg(handleBorderColor).arg(handleWidth).arg(handleOffset).arg(handleRadius));
-
+    settingStyle.append("#theme-frame" + contentStyle.arg(Constants::SETTING_ITEM_PADDING));
     // 重置
     settingStyle.append("#reset-frame" + contentStyle.arg(0));
-    settingStyle.append("#reset-button{border-style:none;border-radius:5px;padding:5px;background:#FFFFFF;color:rgb(255,90,93);}");
-    settingStyle.append("#reset-button:pressed{background:rgb(251,251,251);}");
-
+    settingStyle.append(QString("#reset-button{border-style:none;border-radius:%1px;padding:%2px;background:%3;color:%4;}")
+                        .arg(Constants::BUTTON_RADIUS)
+                        .arg(Constants::BUTTON_PADDING)
+                        .arg(Constants::MAIN_BACKGROUND_1)
+                        .arg(Constants::RESET_BUTTON_COLOR));
+    settingStyle.append(QString("#reset-button:hover{background:%1;}")
+                        .arg(Constants::RESET_BUTTON_HOVER_BACKGROUND));
     setStyleSheet(settingStyle.join(""));
 }
 
 void BaseSetting::initSignalSlots()
 {
-    connect(this->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)), this, SLOT(sliderChange(int)));
-    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
+    connect(this->findChild<Slider*>(), SIGNAL(valueChanged(int)), this, SLOT(sliderChange(int)));
+    connect(this->findChild<CloseButton*>(), SIGNAL(clicked()), this, SLOT(hide()));
     connect(this->findChild<BaseButton*>("reset-button"), SIGNAL(clicked()), this, SLOT(reset()));
     connect(this->findChild<ColorRadio*>("background-pure-color"), SIGNAL(clicked()), this, SLOT(toggleBackgroundColorPanel()));
     connect(this->findChild<ColorRadio*>("background-gradient-color"), SIGNAL(clicked()), this, SLOT(toggleBackgroundColorPanel()));
@@ -147,14 +118,14 @@ void BaseSetting::initSignalSlots()
 ColorRadio *BaseSetting::createColorRadio(QString objName, QString background)
 {
     ColorRadio *colorRadio = new ColorRadio(background);
-    colorRadio->setObjName(objName);
+    colorRadio->setObjectName(objName);
     return colorRadio;
 }
 
 ColorRadio *BaseSetting::createColorRadio(QString objName, QGradient::Preset preset)
 {
     ColorRadio *colorRadio = new ColorRadio(preset);
-    colorRadio->setObjName(objName);
+    colorRadio->setObjectName(objName);
     return colorRadio;
 }
 
@@ -197,11 +168,11 @@ QFrame *BaseSetting::createGradientColorPanel(QString name)
 
 QLayout *BaseSetting::createBackgroundTypeLayout()
 {
-    ColorRadio *pureColor = new ColorRadio("#FFFFFF");
+    ColorRadio *pureColor = new ColorRadio(Constants::MAIN_BACKGROUND_1);
     pureColor->showBorder(true);
-    pureColor->setObjName("background-pure-color");
+    pureColor->setObjectName("background-pure-color");
     ColorRadio *gradientColor = new ColorRadio(QGradient::WarmFlame);
-    gradientColor->setObjName("background-gradient-color");
+    gradientColor->setObjectName("background-gradient-color");
 
     QButtonGroup *radioGroup = new QButtonGroup;
     radioGroup->addButton(pureColor);
@@ -225,15 +196,15 @@ void BaseSetting::toggleBackgroundColorPanel()
         this->findChild<QFrame*>("background-pure-color-frame")->show();
         this->findChild<QLabel*>("theme-item-transparence")->show();
         this->findChild<QLabel*>("theme-item-transparence-value")->show();
-        this->findChild<QSlider*>("theme-item-slider")->show();
+        this->findChild<Slider*>()->show();
         this->findChild<QRadioButton*>(QString("background-pure-color-radio%1")
                 .arg(setting.inited ? setting.backgroundPureColorIndex + 1 : 1))->click();
-        int transparence = 80;
+        int transparence = Constants::WIDGET_TRANSPARENCE;
         if (setting.inited && setting.backgroundPureColorTransparence > 0) {
             transparence = setting.backgroundPureColorTransparence;
         }
         if (!name.isEmpty()) {
-            this->findChild<QSlider*>("theme-item-slider")->setValue(transparence);
+            this->findChild<Slider*>()->setValue(transparence);
         }
         this->resize(size);
     } else if (this->findChild<ColorRadio*>("background-gradient-color")->isChecked()) {
@@ -241,7 +212,7 @@ void BaseSetting::toggleBackgroundColorPanel()
         this->findChild<QFrame*>("background-pure-color-frame")->hide();
         this->findChild<QLabel*>("theme-item-transparence")->hide();
         this->findChild<QLabel*>("theme-item-transparence-value")->hide();
-        this->findChild<QSlider*>("theme-item-slider")->hide();
+        this->findChild<Slider*>()->hide();
         this->findChild<QFrame*>("background-gradient-color-frame")->show();
         this->findChild<QRadioButton*>(QString("background-gradient-color-radio%1")
                 .arg(setting.inited ? setting.backgroundGradientColorIndex + 1 : 1))->click();
@@ -257,11 +228,11 @@ void BaseSetting::reset()
 {
     this->findChild<ColorRadio*>("background-pure-color")->click();
     this->findChild<QRadioButton*>("background-pure-color-radio1")->click();
-    this->findChild<QSlider*>("theme-item-slider")->setValue(80);
+    this->findChild<Slider*>()->setValue(Constants::WIDGET_TRANSPARENCE);
     this->findChild<QRadioButton*>("font-pure-color-radio1")->click();
 }
 
-BaseSetting::BaseSetting(QWidget *parent) : BaseWidget(QColor(240, 240, 240, 250), parent)
+BaseSetting::BaseSetting(QWidget *parent) : BaseWidget(Constants::MAIN_BACKGROUND_2, parent)
 {
     // 颜色块
     colors = QString("#FFFFFF,#1E90FF,#00CED1,#90EE90,#FF8C00,#FF4500,#4D4D4D").split(",");

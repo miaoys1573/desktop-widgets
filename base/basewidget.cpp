@@ -1,4 +1,5 @@
 #include "basewidget.h"
+#include "constants.h"
 #include "dbutil.h"
 #include <QPainter>
 #include <QMouseEvent>
@@ -24,7 +25,7 @@ void BaseWidget::paintEvent(QPaintEvent *event)
     painter.setBrush(brush);
     // 设置边框透明
     painter.setPen(Qt::transparent);
-    painter.drawRoundedRect(this->rect(), 15, 15);
+    painter.drawRoundedRect(this->rect(), Constants::WIDGET_RADIUS, Constants::WIDGET_RADIUS);
     QDialog::paintEvent(event);
 }
 
@@ -70,16 +71,18 @@ void BaseWidget::keyPressEvent(QKeyEvent *event)
 BaseWidget::BaseWidget(QWidget *parent)
     : QDialog(parent)
 {
-    this->_width = 400;
+    this->_width = Constants::WIDGET_WIDTH;
     this->_height = -1;
-    this->brush = QBrush(QColor(255, 255, 255, 51));
+    QColor background(Constants::MAIN_BACKGROUND_1);
+    background.setAlpha((100 - Constants::WIDGET_TRANSPARENCE) * 255 / 100);
+    this->brush = QBrush(background);
     this->initUI();
 }
 
 BaseWidget::BaseWidget(QColor background, QWidget *parent)
     : QDialog(parent)
 {
-    this->_width = 400;
+    this->_width = Constants::WIDGET_WIDTH;
     this->_height = -1;
     this->brush = QBrush(background);
     this->initUI();

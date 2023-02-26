@@ -1,28 +1,22 @@
 #include "basebutton.h"
 #include "basepanel.h"
+#include "closebutton.h"
+#include "constants.h"
 
 #include <QtEvents>
 #include <qboxlayout.h>
 #include <qframe.h>
 #include <qpainter.h>
 #include <qpainterpath.h>
-#include <qpushbutton.h>
 #include <qstyle.h>
 
 void BasePanel::initUI()
 {
-    // 基础设置窗体宽度为400，最大高度为551
-    this->setFixedSize(400, 551);
+    this->setFixedSize(Constants::WIDGET_WIDTH, Constants::MAIN_SETTING_WIDGET_HEIGHT);
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-
-    // 关闭按钮
-    QStyle *style = this->style();
-    QIcon icon = style->standardIcon(QStyle::SP_DialogCloseButton);
-    BaseButton *closeButton = new BaseButton("close-button");
-    closeButton->setIcon(icon);
 
     // 内容区
     layout = new QVBoxLayout;
@@ -31,7 +25,7 @@ void BasePanel::initUI()
     frame->setObjectName("content-frame");
     frame->setLayout(layout);
 
-    mainLayout->addWidget(closeButton, 0, Qt::AlignRight);
+    mainLayout->addWidget(new CloseButton, 0, Qt::AlignRight);
     mainLayout->addWidget(frame);
     this->setLayout(mainLayout);
 
@@ -41,16 +35,13 @@ void BasePanel::initUI()
 
 void BasePanel::loadStyleSheet()
 {
-    QStringList styleSheet;
-    styleSheet.append("#close-button{border-style:none;padding:8px;border-radius:5px;background:#EFEFEF;}");
-    styleSheet.append("#close-button:hover{background:#E4E4E4;}");
-    setStyleSheet(styleSheet.join(""));
+
 }
 
 void BasePanel::paintEvent(QPaintEvent *event)
 {
     QPainterPath painterPath;
-    painterPath.addRoundedRect(this->rect(), 15, 15);
+    painterPath.addRoundedRect(this->rect(), Constants::WIDGET_RADIUS, Constants::WIDGET_RADIUS);
     // 设置窗体左上角为直角
     painterPath.addRect(0, 0, width() / 2, height() / 2);
     // 设置窗体左下角为直角
@@ -60,7 +51,7 @@ void BasePanel::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     // 和基础设置窗体背景色保持一致
-    painter.setBrush(QBrush(QColor(240, 240, 240, 250)));
+    painter.setBrush(QBrush(QColor(Constants::MAIN_BACKGROUND_2)));
     painter.setPen(Qt::transparent);
     painter.drawPath(painterPath);
 

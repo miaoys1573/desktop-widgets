@@ -8,14 +8,14 @@
 #include <qnetworkrequest.h>
 
 #include <base/baselabel.h>
+#include <base/constants.h>
 
 void YiWen::initUI()
 {
-    this->setFixedHeight(240 *2 + 10);
+    this->setFixedHeight(Constants::WIDGET_HEIGHT *2 + 10);
 
     QTextBrowser *contentTextBrowser = new QTextBrowser();
     contentTextBrowser->setObjectName("content-text-browser");
-    contentTextBrowser->setStyleSheet("padding:5px 5px 10px 5px;");
     contentTextBrowser->setTextInteractionFlags(Qt::NoTextInteraction);
     contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
     contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -68,7 +68,7 @@ QString YiWen::getYiWenData()
             }
             if (start)
             {
-                line = line.replace("class=\"article_text\"", "style='font-size:18px;'");
+                line = line.replace("class=\"article_text\"", QString("style='font-size:%1px;'").arg(Constants::CONTENT_FONT_SIZE));
                 result.append(line);
             }
         }

@@ -20,16 +20,13 @@ private:
     void setAsidePanel();
     void setContentPanel();
     void loadSystemTray();
-    void loadStyleSheet();
     void initSignalSlots();
-
-    QRadioButton *createMenuButton(QString name, QString objectName);
 
 private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void toggleContentPanel();
     void backgroundTypeClick();
-    void settingButtonClick();
+    void themeButtonClick();
 
 public:
     MainSetting(QWidget *parent = 0);

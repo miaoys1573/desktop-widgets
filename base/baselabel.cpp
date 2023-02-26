@@ -1,4 +1,5 @@
 #include "baselabel.h"
+#include "constants.h"
 
 BaseLabel::BaseLabel(QWidget *parent)
     : QLabel (parent)
@@ -30,7 +31,7 @@ BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype
 {
     this->setObjectName(objectName);
     if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet("font-size:18px;font-weight:bold;padding:5px 0 5px 0;");
+        this->setStyleSheet(QString("font-size:%1px;font-weight:bold;").arg(Constants::TITLE_FONT_SIZE));
     }
 }
 
@@ -39,7 +40,7 @@ BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype
 {
     this->setObjectName(objectName);
     if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet(QString("font-size:18px;font-weight:bold;%1;").arg(styleSheet));
+        this->setStyleSheet(QString("font-size:%1px;font-weight:bold;%2;").arg(Constants::TITLE_FONT_SIZE).arg(styleSheet));
     } else if (labeltype == BaseLabel::ContentLabel) {
         this->setStyleSheet(styleSheet);
     }

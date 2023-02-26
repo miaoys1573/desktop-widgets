@@ -5,8 +5,10 @@
 
 class BaseProgress : public QProgressBar
 {
+    Q_OBJECT
 
 private:
+    void initUI();
     void loadStyleSheet();
 
 public:

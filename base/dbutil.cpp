@@ -12,12 +12,12 @@ QSqlDatabase DbUtil::initDb()
         database = QSqlDatabase::database("SQLLITE_CONNECTION");
     } else {
         database = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-        QString dirName = QString("%1/.config/cn.miaoys.desktop.widgets").arg(QDir::homePath());
+        QString dirName = QString("%1/.config/desktop-widgets").arg(QDir::homePath());
         QDir dir(dirName);
         if (!dir.exists()) {
             dir.mkdir(dirName);
         }
-        database.setDatabaseName(dirName + "/desktop_widgets.db");
+        database.setDatabaseName(dirName + "/data.db");
         database.open();
         QSqlQuery query(database);
         query.exec(QString(R"(CREATE TABLE 'setting' (

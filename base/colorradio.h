@@ -5,6 +5,7 @@
 
 class ColorRadio : public QRadioButton
 {
+    Q_OBJECT
 
 private:
     bool _showBorder = false;
@@ -22,8 +23,6 @@ public:
     ColorRadio(QGradient gradient, QWidget *parent = 0);
     ColorRadio(QString background, QWidget *parent = 0);
     void showBorder(bool flag);
-    void showCheckFlag(bool flag);
-    void setObjName(QString name);
     void setGradient(QGradient gradient);
     void setBackground(QString background);
 };

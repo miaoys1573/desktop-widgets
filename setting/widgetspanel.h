@@ -1,10 +1,9 @@
 #ifndef WIDGETSPANEL_H
 #define WIDGETSPANEL_H
 
-#include <qcheckbox.h>
-
 #include <base/basecard.h>
 #include <base/basepanel.h>
+#include <base/textcheckbox.h>
 
 class WidgetsPanel : public BasePanel
 {
@@ -12,14 +11,11 @@ class WidgetsPanel : public BasePanel
 
 private:
     QList<BaseCard*> widgets;
-    QMap<QString, QCheckBox*> widgetItems;
+    QMap<QString, TextCheckBox*> widgetItems;
 
     void initUI();
-    void loadStyleSheet();
     void initSignalSlots();
-
     void initWidgets();
-    QCheckBox* createWidgetItem(QString name, QString objectName);
 
 private slots:
     void toggleWidgetItem();
@@ -27,7 +23,7 @@ private slots:
 public:
     WidgetsPanel(QWidget *parent = 0);
     QList<BaseCard*> getWidgets();
-    QMap<QString, QCheckBox*> getWidgetItems();
+    QMap<QString, TextCheckBox*> getWidgetItems();
 };
 
 #endif // WIDGETSPANEL_H

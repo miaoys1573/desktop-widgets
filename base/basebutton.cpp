@@ -1,5 +1,11 @@
 #include "basebutton.h"
 
+BaseButton::BaseButton(QWidget *parent) : QPushButton (parent)
+{
+    this->setCursor(QCursor(Qt::PointingHandCursor));
+    this->setFocusPolicy(Qt::NoFocus);
+}
+
 BaseButton::BaseButton(QString objectName, QWidget *parent) : QPushButton (parent)
 {
     this->setObjectName(objectName);

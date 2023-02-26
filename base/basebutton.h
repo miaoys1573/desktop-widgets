@@ -8,6 +8,7 @@ class BaseButton : public QPushButton
     Q_OBJECT
 
 public:
+    BaseButton(QWidget *parent = 0);
     BaseButton(QString objectName, QWidget *parent = 0);
     BaseButton(QString text, QString objectName, QWidget *parent = 0);
 };

@@ -1,5 +1,8 @@
 #include "basecard.h"
+#include "constants.h"
 #include "dbutil.h"
+#include "iconbutton.h"
+#include "slider.h"
 #include <QFontDatabase>
 #include <QSlider>
 
@@ -8,23 +11,15 @@ void BaseCard::initUI()
     // 默认不显示刷新按钮
     showRefreshButton = false;
 
-    // 初始化字体图标
-    int fontId = QFontDatabase::addApplicationFont(":/assets/fonts/iconfont.ttf");
-    QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
-    iconFont = QFont(fontFamily);
-    fontMap.insert("refresh", QChar(0xe981));
-    fontMap.insert("setting", QChar(0xe979));
-    fontMap.insert("close", QChar(0xe980));
-
     // 按钮组
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    BaseButton *refreshButton = this->createButton("refresh");
+    IconButton *refreshButton = new IconButton("refresh");
     refreshButton->setVisible(showRefreshButton);
-    buttonsLayout->addWidget(refreshButton, 0, Qt::AlignLeft);
-    buttonsLayout->addWidget(this->createButton("setting"), 0, Qt::AlignRight);
-    buttonsLayout->addWidget(this->createButton("close"), 0, Qt::AlignRight);
+    buttonsLayout->addWidget(refreshButton, 0, Qt::AlignRight);
+    buttonsLayout->addWidget(new IconButton("theme"), 0, Qt::AlignRight);
+    buttonsLayout->addWidget(new IconButton("close"), 0, Qt::AlignRight);
     buttonsLayout->setAlignment(Qt::AlignRight);
-    buttonsLayout->setContentsMargins(8, 8, 8, 5);
+    buttonsLayout->setContentsMargins(Constants::BUTTON_PADDING, Constants::BUTTON_PADDING, Constants::BUTTON_PADDING, 0);
 
     // 初始化主布局
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -34,29 +29,20 @@ void BaseCard::initUI()
 
     // 添加到主布局
     layout = new QVBoxLayout();
-    layout->setContentsMargins(15, 0, 15, 15);
+    layout->setContentsMargins(Constants::WIDGET_RADIUS, 0, Constants::WIDGET_RADIUS, Constants::WIDGET_RADIUS);
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(layout);
-
-    // 加载样式
-    this->loadStyleSheet();
 
     // 不显示任务栏图标
     this->setWindowFlag(Qt::Tool);
 }
 
-void BaseCard::loadStyleSheet()
-{
-    QString styleSheet = "#refresh-button,#setting-button,#close-button{width:15px;height:16px;padding:0;background:rgba(0,0,0,0);}";
-    setStyleSheet(styleSheet);
-}
-
 void BaseCard::initSignalSlots()
 {
-    connect(this->findChild<BaseButton*>("refresh-button"), SIGNAL(clicked()), this, SLOT(refresh()));
-    connect(this->findChild<BaseButton*>("setting-button"), SIGNAL(clicked()), this, SLOT(showSettingPanel()));
-    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
-    connect(this->findChild<BaseButton*>("close-button"), SIGNAL(clicked()), _setting, SLOT(hide()));
+    connect(this->findChild<IconButton*>("refresh-button"), SIGNAL(clicked()), this, SLOT(refresh()));
+    connect(this->findChild<IconButton*>("theme-button"), SIGNAL(clicked()), this, SLOT(showSettingPanel()));
+    connect(this->findChild<IconButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
+    connect(this->findChild<IconButton*>("close-button"), SIGNAL(clicked()), _setting, SLOT(hide()));
 
     for (int i = 1; i <= _setting->getColors().size(); i++) {
         connect(_setting->findChild<QRadioButton*>(QString("background-pure-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeBackground()));
@@ -67,15 +53,7 @@ void BaseCard::initSignalSlots()
         connect(_setting->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i)), SIGNAL(clicked()), this, SLOT(changeBackground()));
     }
 
-    connect(_setting->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)), this, SLOT(changeBackgroundAlpha(int)));
-}
-
-BaseButton *BaseCard::createButton(QString name)
-{
-    BaseButton *button = new BaseButton(name + "-button");
-    button->setFont(iconFont);
-    button->setText(fontMap[name]);
-    return button;
+    connect(_setting->findChild<Slider*>(), SIGNAL(valueChanged(int)), this, SLOT(changeBackgroundAlpha(int)));
 }
 
 void BaseCard::showEvent(QShowEvent *event)
@@ -88,7 +66,7 @@ void BaseCard::showEvent(QShowEvent *event)
         if ((int)BaseSetting::PureColor == setting.backgroundType) {
             _setting->findChild<ColorRadio*>("background-pure-color")->click();
             _setting->findChild<ColorRadio*>(QString("background-pure-color-radio%1").arg(setting.backgroundPureColorIndex + 1))->click();
-            _setting->findChild<QSlider*>("theme-item-slider")->setValue(setting.backgroundPureColorTransparence);
+            _setting->findChild<Slider*>()->setValue(setting.backgroundPureColorTransparence);
         } else if ((int)BaseSetting::GradientColor == setting.backgroundType) {
             _setting->findChild<ColorRadio*>("background-gradient-color")->click();
             _setting->findChild<ColorRadio*>(QString("background-gradient-color-radio%1").arg(setting.backgroundGradientColorIndex + 1))->click();
@@ -99,8 +77,8 @@ void BaseCard::showEvent(QShowEvent *event)
         _setting->initSetting();
     }
 
-    if (this->height() < 240) {
-        this->setFixedHeight(240);
+    if (this->height() < Constants::WIDGET_HEIGHT) {
+        this->setFixedHeight(Constants::WIDGET_HEIGHT);
     }
 
     BaseWidget::showEvent(event);
@@ -211,11 +189,11 @@ void BaseCard::setTimerInterval(int interval)
 
 void BaseCard::changeFontColor(QString color)
 {
-    if (showRefreshButton) {
-        this->findChild<BaseButton*>("refresh-button")->setStyleSheet("color:" + color);
+    QList<IconButton*> iconButtons = this->findChildren<IconButton*>();
+    foreach (IconButton* iconButton, iconButtons)
+    {
+        iconButton->setIconColor(color);
     }
-    this->findChild<BaseButton*>("setting-button")->setStyleSheet("color:" + color);
-    this->findChild<BaseButton*>("close-button")->setStyleSheet("color:" + color);
 }
 
 void BaseCard::updateData()
@@ -226,7 +204,7 @@ void BaseCard::updateData()
 void BaseCard::setShowRefreshButton(bool flag)
 {
     showRefreshButton = flag;
-    this->findChild<BaseButton*>("refresh-button")->setVisible(true);
+    this->findChild<IconButton*>("refresh-button")->setVisible(true);
 }
 
 BaseCard::BaseCard(QString name, QString showName, QWidget *parent) : BaseWidget (parent)

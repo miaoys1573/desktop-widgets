@@ -4,6 +4,7 @@
 #include <qhostinfo.h>
 #include <base/baselabel.h>
 #include <base/baseprogress.h>
+#include <base/constants.h>
 
 void SysMonitor::initUI()
 {
@@ -43,11 +44,11 @@ void SysMonitor::initUI()
     layout2->setContentsMargins(0, 0, 0, 2);
 
     layout->addLayout(layout2);
-    layout->setContentsMargins(15, 0, 15, 10);
+    layout->setContentsMargins(Constants::WIDGET_RADIUS, 0, Constants::WIDGET_RADIUS, 10);
 
     if (sysMonitorData.totalSwap == 0) {
         layout2->setContentsMargins(0, 12, 0, 5);
-        layout->setContentsMargins(15, 5, 15, 15);
+        layout->setContentsMargins(Constants::WIDGET_RADIUS, 5, Constants::WIDGET_RADIUS, Constants::WIDGET_RADIUS);
     }
 
     this->updateData();

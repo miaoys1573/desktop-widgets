@@ -9,7 +9,6 @@ class ThemePanel : public BaseSetting
 
 private:
     void initUI();
-    void initSignalSlots();
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;

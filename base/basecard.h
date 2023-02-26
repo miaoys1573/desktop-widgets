@@ -11,17 +11,12 @@ class BaseCard : public BaseWidget
 
 private:
     bool showRefreshButton;
-    QFont iconFont;
-    QMap<QString, QChar> fontMap;
     int backgroundPureColorIndex;
     int backgroundPureColorAlpha;
     int timerId = -1;
 
     void initUI();
-    void loadStyleSheet();
     void initSignalSlots();
-
-    BaseButton *createButton(QString name);
 
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;

@@ -1,4 +1,5 @@
 #include "colorradio.h"
+#include "constants.h"
 
 #include <QPainter>
 #include <QTime>
@@ -17,12 +18,18 @@ void ColorRadio::initUI()
 
 void ColorRadio::loadStyleSheet()
 {
-    QString objectName = this->objectName();
+    int height = Constants::CHECK_BUTTON_HEIGHT;
+    int borderWidth = Constants::CHECK_BUTTON_BORDER_WIDTH;
+    int padding = Constants::BUTTON_PADDING;
     QStringList styleSheet;
-    styleSheet.append(QString("#%1::indicator{border-radius:5px;border:%2px solid #EFEFEF;width:%3px;height:%3px;}")
-                      .arg(objectName).arg(_showBorder ? 3 : 0).arg(_showBorder ? 34 : 40));
-    styleSheet.append(QString("#%1::indicator:checked{padding:%2px;width:26px;height:26px;image:url(:/assets/icons/check.svg)}")
-                      .arg(objectName).arg(_showBorder ? 4 : 7));
+    styleSheet.append(QString("QRadioButton::indicator{border-radius:%1px;border:%2px solid %3;width:%4px;height:%4px;}")
+                      .arg(Constants::BUTTON_RADIUS)
+                      .arg(_showBorder ? borderWidth : 0)
+                      .arg(Constants::MAIN_BACKGROUND_2)
+                      .arg(_showBorder ? height - 2 * borderWidth : height));
+    styleSheet.append(QString("QRadioButton::indicator:checked{padding:%1px;width:%2px;height:%2px;image:url(:/assets/icons/check.svg)}")
+                      .arg(_showBorder ? padding - borderWidth : padding)
+                      .arg(height - 2 * padding));
     this->setStyleSheet(styleSheet.join(""));
 }
 
@@ -39,13 +46,13 @@ void ColorRadio::paintEvent(QPaintEvent *event)
     QRect rect = this->rect();
     rect.setWidth(rect.width() - 6);
     rect.setHeight(rect.height());
-    painter.drawRoundedRect(rect, 5, 5);
+    painter.drawRoundedRect(rect, Constants::BUTTON_RADIUS, Constants::BUTTON_RADIUS);
     QRadioButton::paintEvent(event);
 }
 
 ColorRadio::ColorRadio(QWidget *parent) : QRadioButton (parent)
 {
-    this->setBackground("#FFFFFF");
+    this->setBackground(Constants::MAIN_BACKGROUND_1);
     this->initUI();
 }
 
@@ -64,18 +71,6 @@ ColorRadio::ColorRadio(QString background, QWidget *parent) : QRadioButton (pare
 void ColorRadio::showBorder(bool flag)
 {
     _showBorder = flag;
-    this->loadStyleSheet();
-}
-
-void ColorRadio::showCheckFlag(bool flag)
-{
-    _showCheckFlag = flag;
-    this->loadStyleSheet();
-}
-
-void ColorRadio::setObjName(QString name)
-{
-    QRadioButton::setObjectName(name);
     this->loadStyleSheet();
 }
 

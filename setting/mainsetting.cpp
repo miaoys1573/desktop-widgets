@@ -2,13 +2,17 @@
 #include <QMenu>
 #include <QStyle>
 #include <qbuttongroup.h>
-#include <qpushbutton.h>
 #include <qslider.h>
 #include <qtsingleapplication.h>
+#include <base/closebutton.h>
+#include <base/constants.h>
+#include <base/iconbutton.h>
+#include <base/menuradio.h>
+#include <base/slider.h>
 
 void MainSetting::initUI()
 {
-    this->setFixedWidth(580);
+    this->setFixedWidth(Constants::MAIN_SETTING_WIDGET_WIDTH);
     // 主布局
     layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -19,8 +23,6 @@ void MainSetting::initUI()
     this->setContentPanel();
     // 系统托盘
     this->loadSystemTray();
-    // 加载样式
-    this->loadStyleSheet();
     // 不显示任务栏图标
     this->setWindowFlag(Qt::Tool);
 }
@@ -29,10 +31,11 @@ void MainSetting::setAsidePanel()
 {
     QVBoxLayout *asideLayout = new QVBoxLayout;
     asideLayout->setAlignment(Qt::AlignTop);
-    asideLayout->setContentsMargins(10, 15, 5, 10);
+    int radius = Constants::WIDGET_RADIUS;
+    asideLayout->setContentsMargins(radius, radius, radius - 5, radius);
 
-    QRadioButton *widgetsMenu = this->createMenuButton("显示管理", "widgets-menu");
-    QRadioButton *themeMenu = this->createMenuButton("全局样式", "theme-menu");
+    MenuRadio *widgetsMenu = new MenuRadio("显示管理", "widgets-menu");
+    MenuRadio *themeMenu = new MenuRadio("全局样式", "theme-menu");
     QButtonGroup *menuGroup = new QButtonGroup;
     menuGroup->addButton(widgetsMenu);
     menuGroup->addButton(themeMenu);
@@ -54,7 +57,7 @@ void MainSetting::loadSystemTray()
     systemTray = new QSystemTrayIcon;
     QIcon icon(":/assets/icons/tray_icon.svg");
     systemTray->setIcon(icon);
-    systemTray->setToolTip("桌面小部件Pro");
+    systemTray->setToolTip(Constants::SYSTEM_TRAY_TOOLTIP);
 
     // 系统托盘菜单
     QMenu *systemTrayMenu = new QMenu;
@@ -66,27 +69,22 @@ void MainSetting::loadSystemTray()
     systemTray->show();
 }
 
-void MainSetting::loadStyleSheet()
-{
-
-}
-
 void MainSetting::initSignalSlots()
 {
     // 菜单
-    connect(this->findChild<QRadioButton*>("widgets-menu"), SIGNAL(clicked()), this, SLOT(toggleContentPanel()));
-    connect(this->findChild<QRadioButton*>("theme-menu"), SIGNAL(clicked()), this, SLOT(toggleContentPanel()));
+    connect(this->findChild<MenuRadio*>("widgets-menu"), SIGNAL(clicked()), this, SLOT(toggleContentPanel()));
+    connect(this->findChild<MenuRadio*>("theme-menu"), SIGNAL(clicked()), this, SLOT(toggleContentPanel()));
 
-    connect(widgetsPanel->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(close()));
+    connect(widgetsPanel->findChild<CloseButton*>(), SIGNAL(clicked()), this, SLOT(close()));
 
     // 主题面板
-    connect(themePanel->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(close()));
+    connect(themePanel->findChild<CloseButton*>(), SIGNAL(clicked()), this, SLOT(close()));
     QList<BaseCard*> widgets = widgetsPanel->getWidgets();
     foreach (BaseCard *widget, widgets) {
 
-        connect(widget->findChild<QPushButton*>("setting-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
-        connect(widget->getSetting()->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
-        connect(widget->findChild<QPushButton*>("close-button"), SIGNAL(clicked()), this, SLOT(settingButtonClick()));
+        connect(widget->findChild<IconButton*>("theme-button"), SIGNAL(clicked()), this, SLOT(themeButtonClick()));
+        connect(widget->getSetting()->findChild<CloseButton*>(), SIGNAL(clicked()), this, SLOT(themeButtonClick()));
+        connect(widget->findChild<IconButton*>("close-button"), SIGNAL(clicked()), this, SLOT(themeButtonClick()));
 
         // 背景类型
         connect(themePanel->findChild<ColorRadio*>("background-pure-color"), SIGNAL(clicked()),
@@ -113,8 +111,8 @@ void MainSetting::initSignalSlots()
         }
 
         // 纯色背景透明度
-        connect(themePanel->findChild<QSlider*>("theme-item-slider"), SIGNAL(valueChanged(int)),
-                widget->getSetting()->findChild<QSlider*>("theme-item-slider"), SLOT(setValue(int)));
+        connect(themePanel->findChild<Slider*>(), SIGNAL(valueChanged(int)),
+                widget->getSetting()->findChild<Slider*>(), SLOT(setValue(int)));
 
         // 重置按钮
         connect(themePanel->findChild<QPushButton*>("reset-button"), SIGNAL(clicked()),
@@ -129,28 +127,11 @@ void MainSetting::initSignalSlots()
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
-QRadioButton *MainSetting::createMenuButton(QString name, QString objectName)
-{
-    QRadioButton *menuButton = new QRadioButton(" " + name);
-    menuButton->setObjectName(objectName);
-    menuButton->setCursor(QCursor(Qt::PointingHandCursor));
-    menuButton->setFocusPolicy(Qt::NoFocus);
-    menuButton->setIcon(QIcon(QString(":/assets/icons/%1.svg").arg(objectName.split("-")[0])));
-    menuButton->setIconSize(QSize(20, 20));
-    QStringList styleSheet;
-    styleSheet.append(QString("#%1{background:#FFFFFF;border-radius:5px;height:40px;}").arg(objectName));
-    styleSheet.append(QString("#%1:hover{background:#EFEFEF;}").arg(objectName));
-    styleSheet.append(QString("#%1:checked{background:#EFEFEF;}").arg(objectName));
-    styleSheet.append(QString("#%1::indicator{border-style:none;}").arg(objectName));
-    menuButton->setStyleSheet(styleSheet.join(""));
-    return menuButton;
-}
-
 void MainSetting::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (QSystemTrayIcon::Trigger == reason) {
         if (this->isHidden()) {
-            this->findChild<QRadioButton*>("widgets-menu")->click();
+            this->findChild<MenuRadio*>("widgets-menu")->click();
             this->show();
         } else if (this->isVisible()) {
             this->hide();
@@ -160,10 +141,10 @@ void MainSetting::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MainSetting::toggleContentPanel()
 {
-    QList<QRadioButton*> menus;
-    menus.append(this->findChild<QRadioButton*>("widgets-menu"));
-    menus.append(this->findChild<QRadioButton*>("theme-menu"));
-    foreach (QRadioButton* menu, menus) {
+    QList<MenuRadio*> menus;
+    menus.append(this->findChild<MenuRadio*>("widgets-menu"));
+    menus.append(this->findChild<MenuRadio*>("theme-menu"));
+    foreach (MenuRadio* menu, menus) {
         if (menu->isChecked()) {
             this->findChild<QWidget*>(menu->objectName().split("-")[0] + "-panel")->show();
         } else {
@@ -174,10 +155,10 @@ void MainSetting::toggleContentPanel()
 
 void MainSetting::backgroundTypeClick()
 {
-    themePanel->findChild<QSlider*>("theme-item-slider")->setValue(80);
+    themePanel->findChild<Slider*>()->setValue(Constants::WIDGET_TRANSPARENCE);
 }
 
-void MainSetting::settingButtonClick()
+void MainSetting::themeButtonClick()
 {
     QList<BaseCard*> widgets = widgetsPanel->getWidgets();
     int count = 0;
@@ -188,18 +169,18 @@ void MainSetting::settingButtonClick()
     }
     foreach (BaseCard *widget, widgets) {
         if (count == 0) {
-            widget->findChild<QPushButton*>("setting-button")->show();
+            widget->findChild<IconButton*>("theme-button")->show();
         } else {
             if (widget->getSetting()->isVisible()) {
-                widget->findChild<QPushButton*>("setting-button")->show();
+                widget->findChild<IconButton*>("theme-button")->show();
             } else {
-                widget->findChild<QPushButton*>("setting-button")->hide();
+                widget->findChild<IconButton*>("theme-button")->hide();
             }
         }
     }
 }
 
-MainSetting::MainSetting(QWidget *parent) : BaseWidget (QColor(255, 255, 255), parent)
+MainSetting::MainSetting(QWidget *parent) : BaseWidget (QColor(Constants::MAIN_BACKGROUND_1), parent)
 {
     widgetsPanel = new WidgetsPanel;
     widgetsPanel->setObjectName("widgets-panel");
@@ -210,10 +191,10 @@ MainSetting::MainSetting(QWidget *parent) : BaseWidget (QColor(255, 255, 255), p
     this->initSignalSlots();
 
     // 显示主窗口
-    QMap<QString, QCheckBox*> widgetItems = widgetsPanel->getWidgetItems();
-    QList<QCheckBox*> widgetStatusList = widgetItems.values();
+    QMap<QString, TextCheckBox*> widgetItems = widgetsPanel->getWidgetItems();
+    QList<TextCheckBox*> widgetStatusList = widgetItems.values();
     int count = 0;
-    foreach (QCheckBox* widgetStatus, widgetStatusList) {
+    foreach (TextCheckBox* widgetStatus, widgetStatusList) {
         if (widgetStatus->isChecked()) {
             count++;
         }
@@ -226,7 +207,7 @@ MainSetting::MainSetting(QWidget *parent) : BaseWidget (QColor(255, 255, 255), p
 void MainSetting::showWidgets()
 {
     QList<BaseCard*> widgets = widgetsPanel->getWidgets();
-    QMap<QString, QCheckBox*> widgetItems = widgetsPanel->getWidgetItems();
+    QMap<QString, TextCheckBox*> widgetItems = widgetsPanel->getWidgetItems();
     foreach (BaseCard *widget, widgets) {
         if (widgetItems[widget->name]->isChecked()) {
             widget->show();

@@ -1,6 +1,7 @@
 #include "news.h"
 
 #include <base/baselabel.h>
+#include <base/constants.h>
 
 #include <qeventloop.h>
 #include <qjsonarray.h>
@@ -13,11 +14,10 @@
 
 void News::initUI()
 {
-    this->setFixedHeight(240 *2 + 10);
+    this->setFixedHeight(Constants::WIDGET_HEIGHT *2 + 10);
 
     QTextBrowser *contentTextBrowser = new QTextBrowser();
     contentTextBrowser->setObjectName("content-text-browser");
-    contentTextBrowser->setStyleSheet("padding:5px 5px 10px 5px;");
     contentTextBrowser->setTextInteractionFlags(Qt::NoTextInteraction);
     contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
     contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -42,9 +42,11 @@ void News::updateData()
             NewsData newsData = newsDataList.at(i);
             content.append(QString("<div style='text-align:center;margin-top:%2px'>%1</div>")
                            .arg(newsData.showTime).arg(i == 0 ? 0 : 10));
-            content.append(QString("<div style='font-size:20px;text-align:center;font-weight:bold;margin-top:8px'>%1</div>")
+            content.append(QString("<div style='font-size:%1px;text-align:center;font-weight:bold;margin-top:8px'>%2</div>")
+                           .arg(Constants::TITLE_FONT_SIZE)
                            .arg(newsData.title));
-            content.append(QString("<div style='font-size:18px;text-indent:30px;margin-top:8px'>%1</div>")
+            content.append(QString("<div style='font-size:%1px;text-indent:30px;margin-top:8px'>%2</div>")
+                           .arg(Constants::CONTENT_FONT_SIZE)
                            .arg(newsData.digest));
             content.append("<br>");
         }

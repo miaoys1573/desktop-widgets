@@ -1,19 +1,25 @@
 #include "baseprogress.h"
+#include "constants.h"
+
+void BaseProgress::initUI()
+{
+    this->setRange(0, 100);
+    this->setTextVisible(false);
+}
 
 void BaseProgress::loadStyleSheet()
 {
     QStringList styleSheet;
-    styleSheet.append(QString("#%1{background:%2;max-height:%3px;border-radius:%4px;border:0px solid %2;}")
-                .arg(this->objectName()).arg("rgb(210, 210, 210)").arg(12).arg(6));
-    styleSheet.append(QString("#%1:chunk{background-color:%2;border-radius:%3px;}")
-                .arg(this->objectName()).arg("#FFFFFF").arg(6));
+    styleSheet.append(QString("QProgressBar{background:%1;max-height:%2px;border-radius:%3px;border:0px solid %1;}")
+                .arg(Constants::MAIN_BACKGROUND_4).arg(Constants::PROGRESS_HEIGHT).arg(Constants::PROGRESS_HEIGHT / 2));
+    styleSheet.append(QString("QProgressBar:chunk{background-color:%1;border-radius:%2px;}")
+                .arg(Constants::MAIN_BACKGROUND_1).arg(Constants::PROGRESS_HEIGHT / 2));
     this->setStyleSheet(styleSheet.join(""));
 }
 
 BaseProgress::BaseProgress(QString objectName, QWidget *parent) : QProgressBar(parent)
 {
     this->setObjectName(objectName);
-    this->setRange(0, 100);
-    this->setTextVisible(false);
+    this->initUI();
     this->loadStyleSheet();
 }
