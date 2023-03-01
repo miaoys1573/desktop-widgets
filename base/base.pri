@@ -15,7 +15,8 @@ HEADERS += \
     $$PWD/slider.h \
     $$PWD/iconbutton.h \
     $$PWD/textcheckbox.h \
-    $$PWD/menuradio.h
+    $$PWD/menuradio.h \
+    $$PWD/textbrowser.h
 
 SOURCES += \
     $$PWD/dbutil.cpp \
@@ -32,4 +33,5 @@ SOURCES += \
     $$PWD/baseprogress.cpp \
     $$PWD/iconbutton.cpp \
     $$PWD/textcheckbox.cpp \
-    $$PWD/menuradio.cpp
+    $$PWD/menuradio.cpp \
+    $$PWD/textbrowser.cpp

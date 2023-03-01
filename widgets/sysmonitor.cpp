@@ -50,8 +50,6 @@ void SysMonitor::initUI()
         layout2->setContentsMargins(0, 12, 0, 5);
         layout->setContentsMargins(Constants::WIDGET_RADIUS, 5, Constants::WIDGET_RADIUS, Constants::WIDGET_RADIUS);
     }
-
-    this->updateData();
 }
 
 void SysMonitor::changeFontColor(QString color)

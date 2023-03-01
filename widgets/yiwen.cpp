@@ -1,7 +1,6 @@
 #include "yiwen.h"
 
 #include <QDesktopServices>
-#include <QTextBrowser>
 #include <qeventloop.h>
 #include <qnetworkaccessmanager.h>
 #include <qnetworkreply.h>
@@ -9,26 +8,19 @@
 
 #include <base/baselabel.h>
 #include <base/constants.h>
+#include <base/textbrowser.h>
 
 void YiWen::initUI()
 {
+    this->setShowRefreshButton(true);
     this->setFixedHeight(Constants::WIDGET_HEIGHT *2 + 10);
 
-    QTextBrowser *contentTextBrowser = new QTextBrowser();
-    contentTextBrowser->setObjectName("content-text-browser");
-    contentTextBrowser->setTextInteractionFlags(Qt::NoTextInteraction);
-    contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
-    contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    layout->addWidget(contentTextBrowser);
-
-    this->updateData();
+    layout->addWidget(new TextBrowser());
 }
 
 void YiWen::changeFontColor(QString color)
 {
-    QString styleSheet = QString("background:rgba(0,0,0,0);color:%1").arg(color);
-    this->findChild<QTextBrowser*>("content-text-browser")->setStyleSheet(styleSheet);
+    this->findChild<TextBrowser*>()->setFontColor(color);
     BaseCard::changeFontColor(color);
 }
 
@@ -37,7 +29,7 @@ void YiWen::updateData()
     QString content = this->getYiWenData();
     if (content.length() > 0)
     {
-        this->findChild<QTextBrowser*>("content-text-browser")->setHtml(content);
+        this->findChild<TextBrowser*>()->setHtml(content);
     }
 }
 
@@ -82,5 +74,4 @@ YiWen::YiWen(QWidget *parent) : BaseCard("YIWEN", "每日一文", parent)
 {
     this->initUI();
     this->setTimerInterval(1000 * 60 * 60 * 24);
-    this->setShowRefreshButton(true);
 }

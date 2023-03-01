@@ -13,8 +13,6 @@
 
 void Movie::initUI()
 {
-    MovieData movieData = this->getMovieData();
-
     QHBoxLayout *layout1 = new QHBoxLayout;
 
     BaseLabel *imageLabel = new BaseLabel("image-label");
@@ -38,8 +36,6 @@ void Movie::initUI()
     layout1->addWidget(imageLabel);
     layout1->addLayout(layout2);
     layout->addLayout(layout1);
-
-    this->updateData();
 }
 
 void Movie::changeFontColor(QString color)
@@ -51,6 +47,7 @@ void Movie::changeFontColor(QString color)
     {
         label->setPalette(palette);
     }
+    this->color = color;
     QString title = QString("<a style='color:%1;text-decoration:none' href='%2'>《%3》</a>");
     this->findChild<BaseLabel*>("title-label")->setText(title.arg(color).arg(movieLink).arg(movieTitle));
     BaseCard::changeFontColor(color);
@@ -83,6 +80,8 @@ void Movie::updateData()
                 .arg(movieData.area)
                 .arg("评分：" + movieData.rating)
                 .arg("导演：" + movieData.director);
+        QString title = QString("<a style='color:%1;text-decoration:none' href='%2'>《%3》</a>");
+        this->findChild<BaseLabel*>("title-label")->setText(title.arg(color).arg(movieLink).arg(movieTitle));
         this->findChild<BaseLabel*>("summary-label")->setText(summary);
         this->findChild<BaseLabel*>("desc-label")->setText(QString("        —— %1").arg(movieData.desc));
     }

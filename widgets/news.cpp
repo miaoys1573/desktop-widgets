@@ -2,6 +2,7 @@
 
 #include <base/baselabel.h>
 #include <base/constants.h>
+#include <base/textbrowser.h>
 
 #include <qeventloop.h>
 #include <qjsonarray.h>
@@ -10,26 +11,18 @@
 #include <qnetworkaccessmanager.h>
 #include <qnetworkreply.h>
 #include <qnetworkrequest.h>
-#include <qtextbrowser.h>
 
 void News::initUI()
 {
+    this->setShowRefreshButton(true);
     this->setFixedHeight(Constants::WIDGET_HEIGHT *2 + 10);
 
-    QTextBrowser *contentTextBrowser = new QTextBrowser();
-    contentTextBrowser->setObjectName("content-text-browser");
-    contentTextBrowser->setTextInteractionFlags(Qt::NoTextInteraction);
-    contentTextBrowser->setContextMenuPolicy(Qt::NoContextMenu);
-    contentTextBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    layout->addWidget(contentTextBrowser);
-
-    this->updateData();
+    layout->addWidget(new TextBrowser());
 }
 
 void News::changeFontColor(QString color)
 {
-    QString styleSheet = QString("background:rgba(0,0,0,0);color:%1").arg(color);
-    this->findChild<QTextBrowser*>("content-text-browser")->setStyleSheet(styleSheet);
+    this->findChild<TextBrowser*>()->setFontColor(color);
     BaseCard::changeFontColor(color);
 }
 
@@ -50,7 +43,7 @@ void News::updateData()
                            .arg(newsData.digest));
             content.append("<br>");
         }
-        this->findChild<QTextBrowser*>("content-text-browser")->setText(content.join(""));
+        this->findChild<TextBrowser*>()->setHtml(content.join(""));
     }
 }
 
@@ -87,5 +80,4 @@ News::News(QWidget *parent) : BaseCard ("NEWS", "财经资讯", parent)
 {
     this->initUI();
     this->setTimerInterval(1000 * 60 * 2);
-    this->setShowRefreshButton(true);
 }
