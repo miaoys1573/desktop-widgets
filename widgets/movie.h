@@ -11,6 +11,7 @@ class Movie : public BaseCard
 private:
     QString movieTitle;
     QString movieLink;
+    QString color;
 
     void initUI();
     void changeFontColor(QString color) Q_DECL_OVERRIDE;

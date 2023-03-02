@@ -12,6 +12,8 @@
 
 void YiYan::initUI()
 {
+    this->setShowRefreshButton(true);
+
     BaseLabel *contentLabel = new BaseLabel("content-label");
     contentLabel->setFixedHeight(160);
     contentLabel->setWordWrap(true);
@@ -21,8 +23,6 @@ void YiYan::initUI()
 
     layout->addWidget(contentLabel, 0, Qt::AlignVCenter);
     layout->addWidget(fromLabel, 0, Qt::AlignRight);
-
-    this->updateData();
 }
 
 void YiYan::changeFontColor(QString color)
@@ -75,5 +75,4 @@ YiYan::YiYan(QWidget *parent) : BaseCard("YIYAN", "每日一言", parent)
 {
     this->initUI();
     this->setTimerInterval(1000 * 60 * 30);
-    this->setShowRefreshButton(true);
 }

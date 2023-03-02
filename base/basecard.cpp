@@ -81,6 +81,9 @@ void BaseCard::showEvent(QShowEvent *event)
         this->setFixedHeight(Constants::WIDGET_HEIGHT);
     }
 
+    // 数据更新
+    this->updateData();
+
     BaseWidget::showEvent(event);
 }
 
