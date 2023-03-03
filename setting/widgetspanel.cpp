@@ -5,7 +5,6 @@
 #include <widgets/movie.h>
 #include <widgets/news.h>
 #include <widgets/sysmonitor.h>
-#include <widgets/weather.h>
 #include <widgets/yiwen.h>
 #include <widgets/yiyan.h>
 
@@ -45,7 +44,6 @@ void WidgetsPanel::initWidgets()
     widgets =
     {
         new SysMonitor,
-        new Weather,
         new YiYan,
         new YiWen,
         new Movie,

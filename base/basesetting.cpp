@@ -6,6 +6,9 @@
 #include "closebutton.h"
 #include "slider.h"
 #include <QButtonGroup>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonArray>
 #include <QFile>
 #include <QMetaEnum>
 #include <QStyle>
@@ -122,7 +125,7 @@ ColorRadio *BaseSetting::createColorRadio(QString objName, QString background)
     return colorRadio;
 }
 
-ColorRadio *BaseSetting::createColorRadio(QString objName, QGradient::Preset preset)
+ColorRadio *BaseSetting::createColorRadio(QString objName, QGradient preset)
 {
     ColorRadio *colorRadio = new ColorRadio(preset);
     colorRadio->setObjectName(objName);
@@ -171,7 +174,7 @@ QLayout *BaseSetting::createBackgroundTypeLayout()
     ColorRadio *pureColor = new ColorRadio(Constants::MAIN_BACKGROUND_1);
     pureColor->showBorder(true);
     pureColor->setObjectName("background-pure-color");
-    ColorRadio *gradientColor = new ColorRadio(QGradient::WarmFlame);
+    ColorRadio *gradientColor = new ColorRadio(this->getPresets().at(0));
     gradientColor->setObjectName("background-gradient-color");
 
     QButtonGroup *radioGroup = new QButtonGroup;
@@ -237,11 +240,39 @@ BaseSetting::BaseSetting(QWidget *parent) : BaseWidget(Constants::MAIN_BACKGROUN
     // 颜色块
     colors = QString("#FFFFFF,#1E90FF,#00CED1,#90EE90,#FF8C00,#FF4500,#4D4D4D").split(",");
     // 渐变主题
-    presets = {QGradient::WarmFlame, QGradient::SunnyMorning, QGradient::WinterNeva, QGradient::HeavyRain, QGradient::AmyCrisp,
-               QGradient::DeepBlue, QGradient::RareWind, QGradient::SaintPetersburg, QGradient::StrongBliss, QGradient::SoftGrass,
-               QGradient::DirtyBeauty, QGradient::GreatWhale, QGradient::CochitiLake, QGradient::MountainRock, QGradient::DesertHump,
-               QGradient::JungleDay, QGradient::ConfidentCloud, QGradient::MarbleWall, QGradient::MoleHall, QGradient::SandStrike,
-               QGradient::StrictNovember};
+    #if QT_VERSION <= 0x051200
+        // 读取渐变色数据文件
+        QFile webGradients(QLatin1String(":/assets/webgradients.binaryjson"));
+        webGradients.open(QFile::ReadOnly);
+        QJsonDocument webGradientsJson = QJsonDocument::fromBinaryData(webGradients.readAll());
+
+        presets = *new QVector<QGradient>();
+        QList<int> presetValues = {1, 7, 10, 13, 14, 16, 23, 26, 48, 53, 57, 58, 78, 81, 82, 83, 107, 121, 140, 148, 164};
+        foreach (int presetValue, presetValues) {
+            QJsonValue presetData = webGradientsJson[presetValue - 1];
+            QJsonValue start = presetData[QLatin1String("start")];
+            QJsonValue end = presetData[QLatin1String("end")];
+            qreal x1 = start[QLatin1String("x")].toDouble();
+            qreal y1 = start[QLatin1String("y")].toDouble();
+            qreal x2 = end[QLatin1String("x")].toDouble();
+            qreal y2 = end[QLatin1String("y")].toDouble();
+
+            QLinearGradient preset(x1, y1, x2, y2);
+            preset.setCoordinateMode(QGradient::ObjectBoundingMode);
+            preset.setSpread(QGradient::PadSpread);
+            foreach (QJsonValue stop, presetData[QLatin1String("stops")].toArray()) {
+                preset.setColorAt(stop[QLatin1String("position")].toDouble(),
+                        QColor(QRgb(stop[QLatin1String("color")].toInt())));
+            }
+            presets.append(preset);
+        }
+    #else
+        presets = {QGradient::WarmFlame, QGradient::SunnyMorning, QGradient::WinterNeva, QGradient::HeavyRain, QGradient::AmyCrisp,
+                   QGradient::DeepBlue, QGradient::RareWind, QGradient::SaintPetersburg, QGradient::StrongBliss, QGradient::SoftGrass,
+                   QGradient::DirtyBeauty, QGradient::GreatWhale, QGradient::CochitiLake, QGradient::MountainRock, QGradient::DesertHump,
+                   QGradient::JungleDay, QGradient::ConfidentCloud, QGradient::MarbleWall, QGradient::MoleHall, QGradient::SandStrike,
+                   QGradient::StrictNovember};
+    #endif
     // 主布局
     layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
@@ -257,7 +288,7 @@ QStringList BaseSetting::getColors()
     return colors;
 }
 
-QVector<QGradient::Preset> BaseSetting::getPresets()
+QVector<QGradient> BaseSetting::getPresets()
 {
     return presets;
 }

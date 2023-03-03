@@ -31,7 +31,7 @@ BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype
 {
     this->setObjectName(objectName);
     if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet(QString("font-size:%1px;font-weight:bold;").arg(Constants::TITLE_FONT_SIZE));
+        this->setStyleSheet(QString("font-size:%1px;font-weight:500;").arg(Constants::TITLE_FONT_SIZE));
     }
 }
 
@@ -40,7 +40,7 @@ BaseLabel::BaseLabel(QString text, QString objectName, BaseLabel::type labeltype
 {
     this->setObjectName(objectName);
     if (labeltype == BaseLabel::TitleLabel) {
-        this->setStyleSheet(QString("font-size:%1px;font-weight:bold;%2;").arg(Constants::TITLE_FONT_SIZE).arg(styleSheet));
+        this->setStyleSheet(QString("font-size:%1px;font-weight:500;%2;").arg(Constants::TITLE_FONT_SIZE).arg(styleSheet));
     } else if (labeltype == BaseLabel::ContentLabel) {
         this->setStyleSheet(styleSheet);
     }

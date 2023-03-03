@@ -16,7 +16,7 @@ private:
     // 纯色色系
     QStringList colors;
     // 渐变色色系
-    QVector<QGradient::Preset> presets;
+    QVector<QGradient> presets;
     QVBoxLayout *layout;
     // 用于窗体高度自适应
     QSize size;
@@ -32,7 +32,7 @@ private:
     void initSignalSlots();
 
     ColorRadio *createColorRadio(QString objName, QString background);
-    ColorRadio *createColorRadio(QString objName, QGradient::Preset preset);
+    ColorRadio *createColorRadio(QString objName, QGradient preset);
     // 纯色选择区
     QFrame *createPureColorPanel(QString name);
     // 渐变色选择区
@@ -56,7 +56,7 @@ public:
 
     BaseSetting(QWidget *parent = 0);
     QStringList getColors();
-    QVector<QGradient::Preset> getPresets();
+    QVector<QGradient> getPresets();
     void initSetting();
 };
 

@@ -153,8 +153,8 @@ SysMonitorData SysMonitor::getSysMonitorData()
     process.close();
 
     // 内存
-    QStringList memInfo = line1.split("\n").at(1).split(" ", Qt::SkipEmptyParts);
-    QStringList swapInfo = line1.split("\n").at(2).split(" ", Qt::SkipEmptyParts);
+    QStringList memInfo = line1.split("\n").at(1).split(" ", QString::SkipEmptyParts);
+    QStringList swapInfo = line1.split("\n").at(2).split(" ", QString::SkipEmptyParts);
     sysMonitorData.totalRam = QString::asprintf("%.1f", memInfo.at(1).toInt() / 1024.0).toDouble();
     sysMonitorData.usedRam = QString::asprintf("%.1f", memInfo.at(2).toInt() / 1024.0).toDouble();
     sysMonitorData.ramUsage = QString::asprintf("%.1f", 100.0 * sysMonitorData.usedRam / sysMonitorData.totalRam).toDouble();
@@ -163,7 +163,7 @@ SysMonitorData SysMonitor::getSysMonitorData()
     sysMonitorData.swapUsage = QString::asprintf("%.1f", 100.0 * sysMonitorData.usedSwap / sysMonitorData.totalSwap).toDouble();
 
     // CPU
-    QStringList cpuInfo = line2.split(" ", Qt::SkipEmptyParts);
+    QStringList cpuInfo = line2.split(" ", QString::SkipEmptyParts);
     QMap<QString, int> cpuInfoMap;
     {
         cpuInfoMap["user"] = cpuInfo.at(1).toInt();

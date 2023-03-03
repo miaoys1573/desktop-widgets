@@ -5,5 +5,6 @@
         <file>assets/icons/tray_icon.svg</file>
         <file>assets/icons/theme.svg</file>
         <file>assets/icons/widgets.svg</file>
+        <file>assets/webgradients.binaryjson</file>
     </qresource>
 </RCC>

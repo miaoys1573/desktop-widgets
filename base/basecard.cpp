@@ -8,6 +8,9 @@
 
 void BaseCard::initUI()
 {
+    // 设置默认高度
+    this->setFixedHeight(Constants::WIDGET_HEIGHT);
+
     // 默认不显示刷新按钮
     showRefreshButton = false;
 
@@ -77,10 +80,6 @@ void BaseCard::showEvent(QShowEvent *event)
         _setting->initSetting();
     }
 
-    if (this->height() < Constants::WIDGET_HEIGHT) {
-        this->setFixedHeight(Constants::WIDGET_HEIGHT);
-    }
-
     // 数据更新
     this->updateData();
 
@@ -141,7 +140,7 @@ void BaseCard::changeBackground()
         for (int i = 1; i <= _setting->getPresets().size(); i++) {
             QRadioButton *colorRadio = _setting->findChild<QRadioButton*>(QString("background-gradient-color-radio%1").arg(i));
             if (colorRadio->isChecked()) {
-                QGradient::Preset preset = _setting->getPresets().at(i - 1);
+                QGradient preset = _setting->getPresets().at(i - 1);
                 // 更新样式
                 this->setBrush(QBrush(QGradient(preset)));
                 this->update();
