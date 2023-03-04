@@ -12,8 +12,10 @@ QString Constants::MAIN_BACKGROUND_3 = "#E1E1E1";
 QString Constants::MAIN_BACKGROUND_4 = "#D2D2D2";
 // 标题字体大小
 int Constants::TITLE_FONT_SIZE = 20;
-// 内容字体大小
+// 文本块内容字体大小
 int Constants::CONTENT_FONT_SIZE = 18;
+// 默认字体大小
+int Constants::MAJOR_FONT_SIZE = 15;
 // 按钮圆角半径
 int Constants::BUTTON_RADIUS = 5;
 // 按钮内边距
@@ -33,7 +35,7 @@ int Constants::WIDGET_TRANSPARENCE = 80;
 // 主设置窗口宽度
 int Constants::MAIN_SETTING_WIDGET_WIDTH = 580;
 // 主设置窗口高度
-int Constants::MAIN_SETTING_WIDGET_HEIGHT = 554;
+int Constants::MAIN_SETTING_WIDGET_HEIGHT = 559;
 
 
 // 单选/多选按钮高度

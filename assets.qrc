@@ -6,5 +6,6 @@
         <file>assets/icons/theme.svg</file>
         <file>assets/icons/widgets.svg</file>
         <file>assets/webgradients.binaryjson</file>
+        <file>assets/fonts/HarmonyOS_Sans_SC_Regular.ttf</file>
     </qresource>
 </RCC>

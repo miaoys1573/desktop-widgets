@@ -7,6 +7,9 @@ class BaseLabel : public QLabel
 {
     Q_OBJECT
 
+private:
+    void setFontSize(int size);
+
 public:
     enum type {
         TitleLabel = 1,

@@ -8,6 +8,8 @@ IconButton::IconButton(QString iconName, QWidget *parent) : BaseButton (parent)
     int fontId = QFontDatabase::addApplicationFont(":/assets/fonts/iconfont.ttf");
     QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
     iconFont = QFont(fontFamily);
+    iconFont.setPixelSize(Constants::MAJOR_FONT_SIZE);
+
     fontMap.insert("refresh", QChar(0xe902));
     fontMap.insert("theme", QChar(0xe900));
     fontMap.insert("close", QChar(0xe901));

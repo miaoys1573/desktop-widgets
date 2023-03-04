@@ -13,6 +13,7 @@ public:
     static QString MAIN_BACKGROUND_4;
     static int TITLE_FONT_SIZE;
     static int CONTENT_FONT_SIZE;
+    static int MAJOR_FONT_SIZE;
     static int BUTTON_RADIUS;
     static int BUTTON_PADDING;
 
