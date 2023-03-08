@@ -19,7 +19,7 @@ void WidgetsPanel::initUI()
         QString name = widgets.at(i)->name;
         TextCheckBox *widgetItem = new TextCheckBox(widgets.at(i)->showName, name);
         Setting setting = DbUtil::findSetting(name);
-        if ((setting.inited && setting.isShow) || !setting.inited) {
+        if (setting.inited && setting.isShow) {
             widgetItem->setChecked(true);
         } else {
             widgetItem->setChecked(false);
