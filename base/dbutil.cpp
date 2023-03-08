@@ -44,6 +44,18 @@ DbUtil::DbUtil()
 
 }
 
+int DbUtil::countSetting()
+{
+    QSqlDatabase database = initDb();
+    QSqlQuery query(database);
+    query.exec(QString("SELECT count(0) FROM setting"));
+    int count = 0;
+    if (query.next()){
+        count = query.value(0).toInt();
+    }
+    return count;
+}
+
 Setting DbUtil::findSetting(QString name)
 {
     QSqlDatabase database = initDb();

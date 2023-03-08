@@ -1,11 +1,13 @@
 #include "mainsetting.h"
 #include <QMenu>
+#include <QScreen>
 #include <QStyle>
 #include <qbuttongroup.h>
 #include <qslider.h>
 #include <qtsingleapplication.h>
 #include <base/closebutton.h>
 #include <base/constants.h>
+#include <base/dbutil.h>
 #include <base/iconbutton.h>
 #include <base/menuradio.h>
 #include <base/slider.h>
@@ -199,18 +201,66 @@ MainSetting::MainSetting(QWidget *parent) : BaseWidget (QColor(Constants::MAIN_B
             count++;
         }
     }
+    int settingCount = DbUtil::countSetting();
+    if (settingCount == 0) {
+        // 首次安装后，主设置界面和小部件同时显示
+        count = 0;
+    }
     if (count == 0) {
         this->show();
+        // 主设置面板首次显示位置
+        if (settingCount == 0) {
+            QScreen *screen = QGuiApplication::primaryScreen ();
+            QRect screenRect =  screen->availableVirtualGeometry();
+            int width = (screenRect.width() - Constants::WIDGET_WIDTH * 2 - 10 - Constants::MAIN_SETTING_WIDGET_WIDTH) / 2;
+            int height = (screenRect.height() - Constants::MAIN_SETTING_WIDGET_HEIGHT) / 2;
+            this->move(width, height);
+        }
     }
 }
 
 void MainSetting::showWidgets()
 {
+    QScreen *screen = QGuiApplication::primaryScreen ();
+    QRect screenRect =  screen->availableVirtualGeometry();
+    int screenWidth = screenRect.width();
+    int screenHeight = screenRect.height();
+    int count = DbUtil::countSetting();
+
     QList<BaseCard*> widgets = widgetsPanel->getWidgets();
     QMap<QString, TextCheckBox*> widgetItems = widgetsPanel->getWidgetItems();
-    foreach (BaseCard *widget, widgets) {
+
+    int totalWidth = 0;
+    int totalHeight = 0;
+    for (int i = 0; i < widgets.size(); i++) {
+        BaseCard *widget = widgets.at(i);
         if (widgetItems[widget->name]->isChecked()) {
             widget->show();
+        }
+        // 初始化小部件位置
+        if (count == 0) {
+            int width = widget->width();
+            int height = widget->height();
+            int x = 0;
+            int y = 0;
+            if (i == 0) {
+                x = screenWidth - width;
+                totalWidth += width;
+                totalHeight = height + 10;
+            } else {
+                if (screenHeight - totalHeight < height) {
+                    totalWidth = totalWidth + width + 10;
+                    x = screenWidth - totalWidth;
+                    totalHeight = height + 10;
+                } else {
+                    x = screenWidth - totalWidth;
+                    y = totalHeight;
+                    totalHeight = totalHeight + height + 10;
+                }
+            }
+            widget->move(x, y);
+            QStringList values = {QString::number(x), QString::number(y), "1"};
+            DbUtil::updateSetting(widget->name, {"position_x", "position_y", "is_show"}, values);
         }
     }
 }
