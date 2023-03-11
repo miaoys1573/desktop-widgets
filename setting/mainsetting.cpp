@@ -57,7 +57,7 @@ void MainSetting::setContentPanel()
 void MainSetting::loadSystemTray()
 {
     systemTray = new QSystemTrayIcon;
-    QIcon icon(":/assets/icons/tray_icon.svg");
+    QIcon icon(":/assets/icons/tray_icon.png");
     systemTray->setIcon(icon);
     systemTray->setToolTip(Constants::SYSTEM_TRAY_TOOLTIP);
 
