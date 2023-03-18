@@ -7,5 +7,6 @@
         <file>assets/webgradients.binaryjson</file>
         <file>assets/fonts/HarmonyOS_Sans_SC_Regular.ttf</file>
         <file>assets/icons/tray_icon.png</file>
+        <file>assets/icons/close.svg</file>
     </qresource>
 </RCC>
