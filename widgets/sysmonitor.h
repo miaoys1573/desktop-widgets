@@ -32,6 +32,7 @@ class SysMonitorData
 public:
     QString hostname;
     QString productVersion;
+    QString coreNum;
     QString kernelVersion;
     QString network;
     double totalRam = 0;

@@ -161,8 +161,13 @@ void SysMonitor::initUI()
         layout1->addWidget(new BaseLabel("hostname"), 0, 1, Qt::AlignRight);
         layout1->addWidget(new BaseLabel("系统版本", "product-version-label"), 1, 0, Qt::AlignLeft);
         layout1->addWidget(new BaseLabel("product-version"), 1, 1, Qt::AlignRight);
+    #ifdef Q_OS_WIN
+        layout1->addWidget(new BaseLabel("CPU核心", "core-num-label"), 2, 0, Qt::AlignLeft);
+        layout1->addWidget(new BaseLabel("core-num"), 2, 1, Qt::AlignRight);
+    #else
         layout1->addWidget(new BaseLabel("内核", "kernel-version-label"), 2, 0, Qt::AlignLeft);
         layout1->addWidget(new BaseLabel("kernel-version"), 2, 1, Qt::AlignRight);
+    #endif
         layout1->addWidget(new BaseLabel("网络", "network-label"), 3, 0, Qt::AlignLeft);
         layout1->addWidget(new BaseLabel("network"), 3, 1, Qt::AlignRight);
 
@@ -216,14 +221,22 @@ void SysMonitor::updateData()
     if (sysMonitorData.totalSwap == 0) {
         this->findChild<BaseLabel*>("hostname")->setText(sysMonitorData.hostname);
         this->findChild<BaseLabel*>("product-version")->setText(sysMonitorData.productVersion);
+    #ifdef Q_OS_WIN
+        this->findChild<BaseLabel*>("core-num")->setText(sysMonitorData.coreNum);
+    #else
         this->findChild<BaseLabel*>("kernel-version")->setText(sysMonitorData.kernelVersion);
+    #endif
         this->findChild<BaseLabel*>("network")->setText(sysMonitorData.network);
     } else {
         QString valueTemplate = "<div style='text-align:right;'>%1</div>";
         QStringList value;
         value.append(valueTemplate.arg(sysMonitorData.hostname));
         value.append(valueTemplate.arg(sysMonitorData.productVersion));
+    #ifdef Q_OS_WIN
+        value.append(valueTemplate.arg(sysMonitorData.coreNum));
+    #else
         value.append(valueTemplate.arg(sysMonitorData.kernelVersion));
+    #endif
         value.append(valueTemplate.arg(sysMonitorData.network));
         this->findChild<BaseLabel*>("value-label")->setText(value.join(""));
     }
@@ -257,9 +270,28 @@ SysMonitorData SysMonitor::getSysMonitorData()
 {
     SysMonitorData sysMonitorData;
     sysMonitorData.hostname = QHostInfo::localHostName();
-    sysMonitorData.productVersion = QSysInfo::productVersion();
-    sysMonitorData.kernelVersion = QSysInfo::kernelVersion();
     sysMonitorData.network = _getNetwork();
+
+#ifdef Q_OS_WIN
+    QProcess process;
+    process.start("wmic os get Caption");
+    process.waitForFinished();
+    QString productVersion = QString::fromLocal8Bit(process.readAllStandardOutput());
+    productVersion = productVersion.replace("\r", "").replace("\n", "").replace("Microsoft ", "").replace("Caption", "");
+    productVersion = productVersion.trimmed();
+    process.start("wmic cpu get NumberOfCores");
+    process.waitForFinished();
+    QString coreNum = QString::fromLocal8Bit(process.readAllStandardOutput());
+    coreNum = coreNum.replace("\r", "").replace("\n", "").replace("NumberOfCores", "");
+    coreNum = coreNum.trimmed() + "核";
+    process.close();
+    sysMonitorData.productVersion = productVersion;
+    sysMonitorData.coreNum = coreNum;
+#else
+    sysMonitorData.productVersion = QSysInfo::productType() + " " + QSysInfo::productVersion();
+    sysMonitorData.kernelVersion = QSysInfo::kernelVersion();
+#endif
+
 
 #ifdef Q_OS_LINUX
     QVector<double> memUsage = _getLinuxMemUsage();
