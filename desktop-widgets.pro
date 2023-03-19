@@ -44,3 +44,7 @@ include(./qtsingleapplication/qtsingleapplication.pri)
 include(./base/base.pri)
 include(./widgets/widgets.pri)
 include(./setting/setting.pri)
+
+win32 {
+    LIBS += -lpdh
+}

@@ -35,7 +35,11 @@ int Constants::WIDGET_TRANSPARENCE = 80;
 // 主设置窗口宽度
 int Constants::MAIN_SETTING_WIDGET_WIDTH = 580;
 // 主设置窗口高度
-int Constants::MAIN_SETTING_WIDGET_HEIGHT = 559;
+#ifdef Q_OS_WIN
+int Constants::MAIN_SETTING_WIDGET_HEIGHT = 585;
+#else
+int Constants::MAIN_SETTING_WIDGET_HEIGHT = 550;
+#endif
 
 
 // 单选/多选按钮高度
@@ -73,4 +77,4 @@ int Constants::PROGRESS_HEIGHT = 12;
 
 
 // 系统托盘提示信息
-QString Constants::SYSTEM_TRAY_TOOLTIP = "桌面小部件Pro";
+QString Constants::SYSTEM_TRAY_TOOLTIP = "卡片视界";

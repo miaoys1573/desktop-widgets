@@ -86,7 +86,10 @@ void BaseSetting::setResetPanel()
     QString marginTop = QString("margin:%1px 0 %2px 0").arg(Constants::SETTING_ITEM_MARGIN_TOP).arg(Constants::SETTING_ITEM_MARGIN_TOP / 4);
     layout->addWidget(new BaseLabel("重置", "reset-label", BaseLabel::TitleLabel, marginTop));
     layout->addWidget(resetFrame);
-    layout->addWidget(new BaseLabel);
+
+    QMargins margins = layout->contentsMargins();
+    margins.setBottom(margins.top() * 3);
+    layout->setContentsMargins(margins);
 }
 
 void BaseSetting::loadStyleSheet()

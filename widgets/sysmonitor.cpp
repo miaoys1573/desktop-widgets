@@ -6,6 +6,151 @@
 #include <base/baseprogress.h>
 #include <base/constants.h>
 
+QVector<double> _getLinuxMemUsage()
+{
+    // 数据读取
+    QProcess process;
+    process.start("free", QStringList("-m"));
+    process.waitForFinished();
+    QString line = process.readAllStandardOutput();
+    process.close();
+
+    // 内存
+    QStringList memInfo = line.split("\n").at(1).split(" ", QString::SkipEmptyParts);
+    QStringList swapInfo = line.split("\n").at(2).split(" ", QString::SkipEmptyParts);
+    double totalRam = QString::asprintf("%.1f", memInfo.at(1).toInt() / 1024.0).toDouble();
+    double usedRam = QString::asprintf("%.1f", memInfo.at(2).toInt() / 1024.0).toDouble();
+    double ramUsage = QString::asprintf("%.1f", 100.0 * usedRam / totalRam).toDouble();
+    double totalSwap = QString::asprintf("%.1f", swapInfo.at(1).toInt() / 1024.0).toDouble();
+    double usedSwap = QString::asprintf("%.1f", swapInfo.at(2).toInt() / 1024.0).toDouble();
+    double swapUsage = QString::asprintf("%.1f", 100.0 * usedSwap / totalSwap).toDouble();
+
+    QVector<double> result = {totalRam, usedRam, ramUsage, totalSwap, usedSwap, swapUsage};
+    return result;
+}
+
+QMap<QString, int> lastCpuInfoMap = {
+    std::map<QString,int>::value_type("user", 0),
+    std::map<QString,int>::value_type("nice", 0),
+    std::map<QString,int>::value_type("sys", 0),
+    std::map<QString,int>::value_type("idle", 0),
+    std::map<QString,int>::value_type("iowait", 0),
+    std::map<QString,int>::value_type("hardqirq", 0),
+    std::map<QString,int>::value_type("softirq", 0),
+    std::map<QString,int>::value_type("steal", 0),
+    std::map<QString,int>::value_type("guest", 0),
+    std::map<QString,int>::value_type("guest_nice", 0),
+    std::map<QString,int>::value_type("total", 0)
+};
+double _getLinuxCpuUsage()
+{
+    // 数据读取
+    QProcess process;
+    process.start("cat", QStringList("/proc/stat"));
+    process.waitForFinished();
+    QString line = process.readLine();
+    process.close();
+
+    // CPU
+    QStringList cpuInfo = line.split(" ", QString::SkipEmptyParts);
+    QMap<QString, int> cpuInfoMap;
+    {
+        cpuInfoMap["user"] = cpuInfo.at(1).toInt();
+        cpuInfoMap["nice"] = cpuInfo.at(2).toInt();
+        cpuInfoMap["sys"] = cpuInfo.at(3).toInt();
+        cpuInfoMap["idle"] = cpuInfo.at(4).toInt();
+        cpuInfoMap["iowait"] = cpuInfo.at(5).toInt();
+        cpuInfoMap["hardqirq"] = cpuInfo.at(6).toInt();
+        cpuInfoMap["softirq"] = cpuInfo.at(7).toInt();
+        cpuInfoMap["steal"] = cpuInfo.at(8).toInt();
+        cpuInfoMap["guest"] = cpuInfo.at(9).toInt();
+        cpuInfoMap["guest_nice"] = cpuInfo.at(10).toInt();
+    }
+    int totalCpu = 0;
+    for(int i = 1; i <= 10; i++) {
+        totalCpu += cpuInfo.at(i).toInt();
+    }
+    cpuInfoMap["total"] = totalCpu;
+    double cpuTotalDiff = cpuInfoMap["total"] - lastCpuInfoMap["total"];
+    double cpuIdleDiff = cpuInfoMap["idle"] + cpuInfoMap["iowait"] - lastCpuInfoMap["idle"] - lastCpuInfoMap["iowait"];
+    double cpuUsage = cpuTotalDiff != 0.0 ? (cpuTotalDiff - cpuIdleDiff) * 100.0 / cpuTotalDiff : 0.0;
+    lastCpuInfoMap = cpuInfoMap;
+    return QString::asprintf("%.1f", cpuUsage).toDouble();
+}
+
+#ifdef Q_OS_WIN
+#include <Pdh.h>
+#include <PdhMsg.h>
+QVector<double> _getWinMemUsage()
+{
+    QVector<double> result = {0, 0, 0};
+    MEMORYSTATUSEX memsStat;
+    memsStat.dwLength = sizeof(memsStat);
+    if (GlobalMemoryStatusEx(&memsStat))
+    {
+        double freeRam = memsStat.ullAvailPhys / (1024.0 * 1024.0 * 1024.0);
+        double totalRam = memsStat.ullTotalPhys / (1024.0 * 1024.0 * 1024.0);
+        double usedRam = QString::asprintf("%.1f", totalRam - freeRam).toDouble();
+        totalRam = QString::asprintf("%.1f", totalRam).toDouble();
+        double ramUsage = QString::asprintf("%.1f", 100.0 * usedRam / totalRam).toDouble();
+        result = {totalRam, usedRam, ramUsage};
+    }
+    return result;
+}
+
+PDH_RAW_COUNTER lastRawCounter;
+double _getWinCpuUsage()
+{
+    HQUERY query;
+    HCOUNTER counter;
+    DWORD counterType;
+    PDH_RAW_COUNTER rawCounter;
+
+    // 开始查询
+    PdhOpenQuery(NULL, 0, &query);
+    const wchar_t* queryStr = L"\\Processor Information(_Total)\\% Processor Utility";
+    PdhAddCounter(query, queryStr, NULL, &counter);
+    PdhCollectQueryData(query);
+    PdhGetRawCounterValue(counter, &counterType, &rawCounter);
+
+    PDH_FMT_COUNTERVALUE fmtValue;
+    // 计算使用率
+    PdhCalculateCounterFromRawValue(counter, PDH_FMT_DOUBLE, &rawCounter, &lastRawCounter, &fmtValue);
+    // 关闭查询
+    PdhCloseQuery(query);
+
+    lastRawCounter = rawCounter;
+    double cpuUsage = fmtValue.doubleValue;
+    return QString::asprintf("%.1f", cpuUsage).toDouble();
+}
+#endif
+
+QString _getNetwork()
+{
+    QString network = "无网络";
+    QString networkCardPrefixes = "en,eth,wl,ww,eno,ens,enp";
+    QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
+    foreach (QNetworkInterface networkInterface, networkInterfaces)
+    {
+        if (networkInterface.flags().testFlag(QNetworkInterface::IsRunning))
+        {
+            QString name = networkInterface.name();
+            if (networkCardPrefixes.contains(name.left(2)) || networkCardPrefixes.contains(name.left(3)))
+            {
+                QList<QNetworkAddressEntry> networkAddressEntries = networkInterface.addressEntries();
+                foreach(QNetworkAddressEntry networkAddressEntry, networkAddressEntries)
+                {
+                    if (QAbstractSocket::IPv4Protocol == networkAddressEntry.ip().protocol())
+                    {
+                        network = networkAddressEntry.ip().toString();
+                    }
+                }
+            }
+        }
+    }
+    return network;
+}
+
 void SysMonitor::initUI()
 {
     SysMonitorData sysMonitorData = this->getSysMonitorData();
@@ -108,103 +253,38 @@ void SysMonitor::updateData()
     }
 }
 
-QString SysMonitor::getNetwork()
-{
-    QString network = "无网络";
-    QString networkCardPrefixes = "en,wl,ww,eno,ens,enp";
-    QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
-    foreach (QNetworkInterface networkInterface, networkInterfaces)
-    {
-        if (networkInterface.flags().testFlag(QNetworkInterface::IsRunning))
-        {
-            QString name = networkInterface.name();
-            if (networkCardPrefixes.contains(name.left(2)) || networkCardPrefixes.contains(name.left(3)))
-            {
-                QList<QNetworkAddressEntry> networkAddressEntries = networkInterface.addressEntries();
-                foreach(QNetworkAddressEntry networkAddressEntry, networkAddressEntries)
-                {
-                    if (QAbstractSocket::IPv4Protocol == networkAddressEntry.ip().protocol())
-                    {
-                        network = networkAddressEntry.ip().toString();
-                    }
-                }
-            }
-        }
-    }
-    return network;
-}
-
 SysMonitorData SysMonitor::getSysMonitorData()
 {
     SysMonitorData sysMonitorData;
     sysMonitorData.hostname = QHostInfo::localHostName();
     sysMonitorData.productVersion = QSysInfo::productVersion();
     sysMonitorData.kernelVersion = QSysInfo::kernelVersion();
-    sysMonitorData.network = this->getNetwork();
+    sysMonitorData.network = _getNetwork();
 
-    // 数据读取
-    QProcess process;
-    process.start("free", QStringList("-m"));
-    process.waitForFinished();
-    QString line1 = process.readAllStandardOutput();
-    process.start("cat", QStringList("/proc/stat"));
-    process.waitForFinished();
-    QString line2 = process.readLine();
-    process.close();
-
-    // 内存
-    QStringList memInfo = line1.split("\n").at(1).split(" ", QString::SkipEmptyParts);
-    QStringList swapInfo = line1.split("\n").at(2).split(" ", QString::SkipEmptyParts);
-    sysMonitorData.totalRam = QString::asprintf("%.1f", memInfo.at(1).toInt() / 1024.0).toDouble();
-    sysMonitorData.usedRam = QString::asprintf("%.1f", memInfo.at(2).toInt() / 1024.0).toDouble();
-    sysMonitorData.ramUsage = QString::asprintf("%.1f", 100.0 * sysMonitorData.usedRam / sysMonitorData.totalRam).toDouble();
-    sysMonitorData.totalSwap = QString::asprintf("%.1f", swapInfo.at(1).toInt() / 1024.0).toDouble();
-    sysMonitorData.usedSwap = QString::asprintf("%.1f", swapInfo.at(2).toInt() / 1024.0).toDouble();
-    sysMonitorData.swapUsage = QString::asprintf("%.1f", 100.0 * sysMonitorData.usedSwap / sysMonitorData.totalSwap).toDouble();
-
-    // CPU
-    QStringList cpuInfo = line2.split(" ", QString::SkipEmptyParts);
-    QMap<QString, int> cpuInfoMap;
-    {
-        cpuInfoMap["user"] = cpuInfo.at(1).toInt();
-        cpuInfoMap["nice"] = cpuInfo.at(2).toInt();
-        cpuInfoMap["sys"] = cpuInfo.at(3).toInt();
-        cpuInfoMap["idle"] = cpuInfo.at(4).toInt();
-        cpuInfoMap["iowait"] = cpuInfo.at(5).toInt();
-        cpuInfoMap["hardqirq"] = cpuInfo.at(6).toInt();
-        cpuInfoMap["softirq"] = cpuInfo.at(7).toInt();
-        cpuInfoMap["steal"] = cpuInfo.at(8).toInt();
-        cpuInfoMap["guest"] = cpuInfo.at(9).toInt();
-        cpuInfoMap["guest_nice"] = cpuInfo.at(10).toInt();
-    }
-    int totalCpu = 0;
-    for(int i = 1; i <= 10; i++) {
-        totalCpu += cpuInfo.at(i).toInt();
-    }
-    cpuInfoMap["total"] = totalCpu;
-    double cpuTotalDiff = cpuInfoMap["total"] - lastCpuInfoMap["total"];
-    double cpuIdleDiff = cpuInfoMap["idle"] + cpuInfoMap["iowait"] - lastCpuInfoMap["idle"] - lastCpuInfoMap["iowait"];
-    double cpuUsage = cpuTotalDiff != 0.0 ? (cpuTotalDiff - cpuIdleDiff) * 100.0 / cpuTotalDiff : 0.0;
-    sysMonitorData.cpuUsage = QString::asprintf("%.1f", cpuUsage).toDouble();
-    lastCpuInfoMap = cpuInfoMap;
+#ifdef Q_OS_LINUX
+    QVector<double> memUsage = _getLinuxMemUsage();
+    double cpuUsage = _getLinuxCpuUsage();
+    sysMonitorData.totalRam = memUsage.at(0);
+    sysMonitorData.usedRam = memUsage.at(1);
+    sysMonitorData.ramUsage = memUsage.at(2);
+    sysMonitorData.totalSwap = memUsage.at(3);
+    sysMonitorData.usedSwap = memUsage.at(4);
+    sysMonitorData.swapUsage = memUsage.at(5);
+    sysMonitorData.cpuUsage = cpuUsage;
+#elif defined(Q_OS_WIN)
+    QVector<double> memUsage = _getWinMemUsage();
+    double cpuUsage = _getWinCpuUsage();
+    sysMonitorData.totalRam = memUsage.at(0);
+    sysMonitorData.usedRam = memUsage.at(1);
+    sysMonitorData.ramUsage = memUsage.at(2);
+    sysMonitorData.cpuUsage = cpuUsage;
+#endif
 
     return sysMonitorData;
 }
 
 SysMonitor::SysMonitor(QWidget *parent) : BaseCard ("MONITOR", "系统资源", parent)
 {
-    lastCpuInfoMap["user"] = 0;
-    lastCpuInfoMap["nice"] = 0;
-    lastCpuInfoMap["sys"] = 0;
-    lastCpuInfoMap["idle"] = 0;
-    lastCpuInfoMap["iowait"] = 0;
-    lastCpuInfoMap["hardqirq"] = 0;
-    lastCpuInfoMap["softirq"] = 0;
-    lastCpuInfoMap["steal"] = 0;
-    lastCpuInfoMap["guest"] = 0;
-    lastCpuInfoMap["guest_nice"] = 0;
-    lastCpuInfoMap["total"] = 0;
-
     this->initUI();
     this->setTimerInterval(2000);
 }

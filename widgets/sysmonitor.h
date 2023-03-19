@@ -4,7 +4,7 @@
 #include <base/basecard.h>
 
 /*
- * en：Ethernet
+ * en/eth：Ethernet
  * wl：无线网卡（WIFI）
  * ww：无线广域网卡（4G上网卡等）
  * eno：板载网卡
@@ -17,13 +17,10 @@ class SysMonitor : public BaseCard
     Q_OBJECT
 
 private:
-    QMap<QString, int> lastCpuInfoMap;
-
     void initUI();
     void changeFontColor(QString color) Q_DECL_OVERRIDE;
     void updateData() Q_DECL_OVERRIDE;
 
-    QString getNetwork();
     SysMonitorData getSysMonitorData();
 
 public:
@@ -37,13 +34,13 @@ public:
     QString productVersion;
     QString kernelVersion;
     QString network;
-    double totalRam;
-    double usedRam;
-    double ramUsage;
+    double totalRam = 0;
+    double usedRam = 0;
+    double ramUsage = 0;
     double totalSwap = 0;
-    double usedSwap;
-    double swapUsage;
-    double cpuUsage;
+    double usedSwap = 0;
+    double swapUsage = 0;
+    double cpuUsage = 0;
 };
 
 #endif // SYSMONITOR_H

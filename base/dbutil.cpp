@@ -6,13 +6,19 @@
 
 QSqlDatabase DbUtil::initDb()
 {
+    QString dirName;
+#ifdef Q_OS_WIN
+    dirName = QString("%1/AppData/Local/desktop-widgets").arg(QDir::homePath());
+#else
+    dirName = QString("%1/.config/desktop-widgets").arg(QDir::homePath());
+#endif
+
     QSqlDatabase database;
     QString connectionName = "SQLLITE_CONNECTION";
     if (QSqlDatabase::contains(connectionName)) {
         database = QSqlDatabase::database("SQLLITE_CONNECTION");
     } else {
         database = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-        QString dirName = QString("%1/.config/desktop-widgets").arg(QDir::homePath());
         QDir dir(dirName);
         if (!dir.exists()) {
             dir.mkdir(dirName);
