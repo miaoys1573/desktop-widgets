@@ -47,4 +47,9 @@ include(./setting/setting.pri)
 
 win32 {
     LIBS += -lpdh
+
+    DISTFILES += \
+        logo.rc
+
+    RC_FILE += logo.rc
 }

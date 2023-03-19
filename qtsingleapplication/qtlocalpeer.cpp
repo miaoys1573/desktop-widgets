@@ -45,6 +45,7 @@
 
 #if defined(Q_OS_WIN)
 #include <QLibrary>
+#include <qdatastream.h>
 #include <qt_windows.h>
 typedef BOOL(WINAPI*PProcessIdToSessionId)(DWORD,DWORD*);
 static PProcessIdToSessionId pProcessIdToSessionId = 0;
