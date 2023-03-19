@@ -5,6 +5,8 @@ void TextBrowser::initUI()
     this->setTextInteractionFlags(Qt::NoTextInteraction);
     this->setContextMenuPolicy(Qt::NoContextMenu);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // windows背景透明
+    this->setFrameStyle(QFrame::NoFrame);
 }
 
 TextBrowser::TextBrowser(QWidget *parent) : QTextBrowser (parent)
