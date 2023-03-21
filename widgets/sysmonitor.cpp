@@ -128,14 +128,14 @@ double _getWinCpuUsage()
 QString _getNetwork()
 {
     QString network = "无网络";
-    QString networkCardPrefixes = "en,eth,wl,ww,eno,ens,enp";
+    QString networkCardPrefixes = "en,ethernet,wl,wireless,ww,wirearea,eno,ens,enp";
     QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
     foreach (QNetworkInterface networkInterface, networkInterfaces)
     {
         if (networkInterface.flags().testFlag(QNetworkInterface::IsRunning))
         {
             QString name = networkInterface.name();
-            if (networkCardPrefixes.contains(name.left(2)) || networkCardPrefixes.contains(name.left(3)))
+            if (networkCardPrefixes.contains(name.left(2)) || networkCardPrefixes.contains(name.left(3)) || networkCardPrefixes.contains(name.left(8)))
             {
                 QList<QNetworkAddressEntry> networkAddressEntries = networkInterface.addressEntries();
                 foreach(QNetworkAddressEntry networkAddressEntry, networkAddressEntries)

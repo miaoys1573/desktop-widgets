@@ -4,9 +4,9 @@
 #include <base/basecard.h>
 
 /*
- * en/eth：Ethernet
- * wl：无线网卡（WIFI）
- * ww：无线广域网卡（4G上网卡等）
+ * en/ethernet：Ethernet
+ * wl/wireless：无线网卡（WIFI）
+ * ww/wirearea：无线广域网卡（4G上网卡等）
  * eno：板载网卡
  * ens：热插拔网卡
  * enp：pcie网卡
