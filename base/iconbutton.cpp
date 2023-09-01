@@ -10,6 +10,8 @@ IconButton::IconButton(QString iconName, QWidget *parent) : BaseButton (parent)
     iconFont = QFont(fontFamily);
     iconFont.setPixelSize(Constants::MAJOR_FONT_SIZE);
 
+    fontMap.insert("top", QChar(0xe904));
+    fontMap.insert("cancel-top", QChar(0xe905));
     fontMap.insert("refresh", QChar(0xe902));
     fontMap.insert("theme", QChar(0xe900));
     fontMap.insert("close", QChar(0xe901));

@@ -23,6 +23,8 @@ private:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
+    void top();
+    void cancelTop();
     void refresh();
     void showSettingPanel();
     void changeBackground();

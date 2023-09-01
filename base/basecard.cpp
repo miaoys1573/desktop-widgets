@@ -5,6 +5,7 @@
 #include "slider.h"
 #include <QFontDatabase>
 #include <QSlider>
+#include <QWindow>
 
 void BaseCard::initUI()
 {
@@ -16,6 +17,10 @@ void BaseCard::initUI()
 
     // 按钮组
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    buttonsLayout->addWidget(new IconButton("top"), 0, Qt::AlignRight);
+    IconButton *cancelTopButton = new IconButton("cancel-top");
+    cancelTopButton->setVisible(false);
+    buttonsLayout->addWidget(cancelTopButton, 0, Qt::AlignRight);
     IconButton *refreshButton = new IconButton("refresh");
     refreshButton->setVisible(showRefreshButton);
     buttonsLayout->addWidget(refreshButton, 0, Qt::AlignRight);
@@ -42,6 +47,8 @@ void BaseCard::initUI()
 
 void BaseCard::initSignalSlots()
 {
+    connect(this->findChild<IconButton*>("top-button"), SIGNAL(clicked()), this, SLOT(top()));
+    connect(this->findChild<IconButton*>("cancel-top-button"), SIGNAL(clicked()), this, SLOT(cancelTop()));
     connect(this->findChild<IconButton*>("refresh-button"), SIGNAL(clicked()), this, SLOT(refresh()));
     connect(this->findChild<IconButton*>("theme-button"), SIGNAL(clicked()), this, SLOT(showSettingPanel()));
     connect(this->findChild<IconButton*>("close-button"), SIGNAL(clicked()), this, SLOT(hide()));
@@ -103,6 +110,20 @@ void BaseCard::timerEvent(QTimerEvent *event)
         this->updateData();
     }
     QObject::timerEvent(event);
+}
+
+void BaseCard::top()
+{
+    this->findChild<IconButton*>("top-button")->setVisible(false);
+    this->findChild<IconButton*>("cancel-top-button")->setVisible(true);
+    this->windowHandle()->setFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
+}
+
+void BaseCard::cancelTop()
+{
+    this->findChild<IconButton*>("top-button")->setVisible(true);
+    this->findChild<IconButton*>("cancel-top-button")->setVisible(false);
+     this->windowHandle()->setFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
 }
 
 void BaseCard::refresh()
